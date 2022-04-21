@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
-import { Link, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import { useAppDispatch, useAppSelector } from './app/hooks'
-import { init, logout, selectLogin } from './features/login/loginSlice'
+import { init, selectLogin } from './features/login/loginSlice'
+import Header from './Header'
 import Home from './Home'
 import Main from './Main'
 import Person from './Person'
@@ -29,10 +30,7 @@ function App() {
     )
   return (
     <div>
-      <header>
-        <Link to="/people/me">{login.webId}</Link>
-        <button onClick={() => dispatch(logout())}>log out</button>
-      </header>
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/people/:personId" element={<Person />} />
