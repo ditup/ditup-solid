@@ -2,6 +2,8 @@ import { QueryEngine } from '@comunica/query-sparql/lib/index-browser'
 import { fetch } from '@inrupt/solid-client-authn-browser'
 import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes'
 import { createApi } from '@reduxjs/toolkit/query/react'
+import { useMemo } from 'react'
+import useQuery from '../../useQuery'
 
 const sparqlEngine = new QueryEngine()
 
@@ -56,6 +58,68 @@ export const ditapi = createApi({
     }),
   }),
 })
+
+export const useGetUserInterests = (userId: string) => {
+  const query = useMemo(
+    () =>
+      `
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  PREFIX dbo: <http://dbpedia.org/ontology/>
+  SELECT DISTINCT ?uri ?label ?description
+  WHERE {
+    {
+      <${userId}> foaf:topic_interest ?uri.
+      ?uri rdfs:label ?label.
+      ?uri dbo:abstract ?description.
+    }
+    UNION {
+      <${userId}> foaf:topic_interest ?uri.
+      ?oneUri owl:sameAs ?uri.
+      ?oneUri rdfs:label ?label.
+      ?oneUri dbo:abstract ?description.
+    }
+    FILTER(lang(?label)='en')
+    FILTER(lang(?description)='en')
+  }`,
+    [userId],
+  )
+  const sources: [string, ...string[]] = useMemo(
+    () => [
+      userId,
+      // 'https://query.wikidata.org/sparql',
+      'https://query.wikidata.org/bigdata/ldf',
+      'https://fragments.dbpedia.org/2016-04/en',
+    ],
+    [userId],
+  )
+
+  const [errors, data, isLoading] = useQuery<{
+    uri: string
+    label: string
+    description: string
+  }>(query, sources)
+  return { errors, data, isLoading }
+}
+
+export const useGetUserInterestUris = (userId: string) => {
+  const query = useMemo(
+    () =>
+      `
+  SELECT DISTINCT ?uri
+  WHERE {
+      <${userId}> foaf:topic_interest ?uri.
+  }`,
+    [userId],
+  )
+  const sources: [string, ...string[]] = useMemo(() => [userId], [userId])
+
+  const [errors, data, isLoading] = useQuery<{
+    uri: string
+  }>(query, sources)
+  return { errors, data: data.map(({ uri }) => uri), isLoading }
+}
 
 /*import { createApi, BaseQueryFn } from '@reduxjs/toolkit/query'
 import axios, { AxiosRequestConfig, AxiosError } from 'axios'
