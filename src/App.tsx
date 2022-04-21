@@ -1,56 +1,42 @@
-import React from 'react'
-import logo from './logo.svg'
-import { Counter } from './features/counter/Counter'
+import React, { useEffect } from 'react'
+import { Link, Route, Routes } from 'react-router-dom'
 import './App.css'
+import { useAppDispatch, useAppSelector } from './app/hooks'
+import { init, logout, selectLogin } from './features/login/loginSlice'
+import Home from './Home'
+import Main from './Main'
+import Person from './Person'
+import Signup from './Signup'
 
 function App() {
+  const login = useAppSelector(selectLogin)
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    dispatch(init())
+  }, [dispatch])
+
+  if (login.status === 'loading') return <div>initializing</div>
+
+  if (!login.isLoggedIn)
+    return (
+      <div>
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </div>
+    )
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
+    <div>
+      <header>
+        <Link to="/people/me">{login.webId}</Link>
+        <button onClick={() => dispatch(logout())}>log out</button>
       </header>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/people/:personId" element={<Person />} />
+      </Routes>
     </div>
   )
 }

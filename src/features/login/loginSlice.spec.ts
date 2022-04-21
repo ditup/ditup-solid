@@ -1,9 +1,10 @@
-import counterReducer, {
-  CounterState,
+/*
+import loginReducer, {
+  LoginState,
   increment,
   decrement,
   incrementByAmount,
-} from './counterSlice'
+} from './loginSlice'
 
 describe('counter reducer', () => {
   const initialState: CounterState = {
@@ -32,3 +33,6 @@ describe('counter reducer', () => {
     expect(actual.value).toEqual(5)
   })
 })
+*/
+
+export {}
