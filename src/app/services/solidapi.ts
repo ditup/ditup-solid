@@ -79,7 +79,7 @@ export const solidApi = createApi({
   baseQuery: solidQuery(),
   tagTypes: ['PersonalInterests'],
   endpoints: build => ({
-    readInterests: build.query<{ interests: string[] }, string>({
+    readInterests: build.query<string[], string>({
       query: uri => ({
         uri,
         data: { add: [], remove: [] },
@@ -88,6 +88,7 @@ export const solidApi = createApi({
       providesTags: (result, error, uri) => [
         { type: 'PersonalInterests', id: uri },
       ],
+      transformResponse: ({ interests }: { interests: string[] }) => interests,
     }),
     addInterest: build.mutation<
       { interests: string[] },

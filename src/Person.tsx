@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { fetchImage } from './api'
 import { useAppSelector } from './app/hooks'
-import { ditapi, useGetUserInterests } from './app/services/ditapi'
+import { ditapi } from './app/services/ditapi'
+import { interestApi } from './app/services/interestApi'
 import { solidApi } from './app/services/solidapi'
+import { useQueries } from './app/services/useQueries'
 import { selectLogin } from './features/login/loginSlice'
 import InterestSearchInput from './InterestSearchInput'
 import logo from './logo.png'
@@ -13,24 +15,35 @@ const Person = () => {
   const loginUri = useAppSelector(selectLogin).webId
   const personUri = personId === 'me' ? loginUri : personId
   const { data, isLoading } = ditapi.endpoints.getUser.useQuery(personUri)
-  const [addInterest, { isLoading: isAddingInterest }] =
-    solidApi.endpoints.addInterest.useMutation()
-  const [removeInterest, { isLoading: isRemovingInterest }] =
-    solidApi.endpoints.removeInterest.useMutation()
+  const [addInterest] = solidApi.endpoints.addInterest.useMutation()
+  const [removeInterest] = solidApi.endpoints.removeInterest.useMutation()
 
+  /*
   const { data: interests, isLoading: areInterestsLoading } =
     useGetUserInterests(personUri)
+    */
 
   const { data: personInterests } =
     solidApi.endpoints.readInterests.useQuery(personUri)
 
-  console.log(personInterests)
+  const personInterestsToFind = useMemo(
+    () => (personInterests || []).filter(uri => uri.includes('wikidata')),
+    [personInterests],
+  )
+
+  const interestQueries = useQueries(
+    interestApi.endpoints.readInterest,
+    personInterestsToFind,
+  )
+
+  const interests = interestQueries
+    .filter(query => query.data)
+    .map(query => query.data)
+    .filter(a => a) as { uri: string; label: string; description: string }[]
 
   const [image, setImage] = useState(logo)
 
-  const combinedInterests = (
-    personInterests?.interests ?? ([] as string[])
-  ).map(uri => {
+  const combinedInterests = (personInterests ?? ([] as string[])).map(uri => {
     const interest = interests.find(i => i.uri === uri) ?? {
       uri,
       label: uri.split('/').pop(),
@@ -81,23 +94,20 @@ const Person = () => {
             </button>
           </li>
         ))}
-        {areInterestsLoading && <li style={{ margin: '10px' }}>...</li>}
       </ul>
       <InterestSearchInput
         onSelect={uri => addInterest({ uri: personUri, interest: uri })}
       />
-      {!areInterestsLoading && (
-        <a
-          href={`https://www.interesting.chat/?interests=${encodeURIComponent(
-            interests
-              .filter(({ uri }) => uri.includes('wikidata'))
-              .map(({ uri }) => uri.split('/').pop())
-              .join(','),
-          )}`}
-        >
-          Chat with a stranger about your interests
-        </a>
-      )}
+      <a
+        href={`https://www.interesting.chat/?interests=${encodeURIComponent(
+          interests
+            .filter(({ uri }) => uri.includes('wikidata'))
+            .map(({ uri }) => uri.split('/').pop())
+            .join(','),
+        )}`}
+      >
+        Chat with a stranger about your interests
+      </a>
     </div>
   )
 }
