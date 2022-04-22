@@ -2,28 +2,35 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { fetchImage } from './api'
 import { useAppSelector } from './app/hooks'
-import {
-  ditapi,
-  useGetUserInterests,
-  useGetUserInterestUris,
-} from './app/services/ditapi'
+import { ditapi, useGetUserInterests } from './app/services/ditapi'
+import { solidApi } from './app/services/solidapi'
 import { selectLogin } from './features/login/loginSlice'
+import InterestSearchInput from './InterestSearchInput'
 import logo from './logo.png'
 
 const Person = () => {
   const personId = useParams<'personId'>().personId as string
   const loginUri = useAppSelector(selectLogin).webId
-  const uri = personId === 'me' ? loginUri : personId
-  const { data, isLoading } = ditapi.endpoints.getUser.useQuery(uri)
+  const personUri = personId === 'me' ? loginUri : personId
+  const { data, isLoading } = ditapi.endpoints.getUser.useQuery(personUri)
+  const [addInterest, { isLoading: isAddingInterest }] =
+    solidApi.endpoints.addInterest.useMutation()
+  const [removeInterest, { isLoading: isRemovingInterest }] =
+    solidApi.endpoints.removeInterest.useMutation()
 
   const { data: interests, isLoading: areInterestsLoading } =
-    useGetUserInterests(uri)
+    useGetUserInterests(personUri)
 
-  const { data: interestUris } = useGetUserInterestUris(uri)
+  const { data: personInterests } =
+    solidApi.endpoints.readInterests.useQuery(personUri)
+
+  console.log(personInterests)
 
   const [image, setImage] = useState(logo)
 
-  const combinedInterests = interestUris.map(uri => {
+  const combinedInterests = (
+    personInterests?.interests ?? ([] as string[])
+  ).map(uri => {
     const interest = interests.find(i => i.uri === uri) ?? {
       uri,
       label: uri.split('/').pop(),
@@ -45,7 +52,7 @@ const Person = () => {
     <div>
       <img src={image} style={{ width: '10rem' }} />
       <div>
-        {isLoading ? '...' : data?.name ?? ''} <a href={uri}>link</a>
+        {isLoading ? '...' : data?.name ?? ''} <a href={personUri}>link</a>
       </div>
       <ul
         style={{
@@ -65,10 +72,20 @@ const Person = () => {
             }
           >
             <a href={interest.uri}>{interest.label}</a>
+            <button
+              onClick={() => {
+                removeInterest({ uri: personUri, interest: interest.uri })
+              }}
+            >
+              remove
+            </button>
           </li>
         ))}
         {areInterestsLoading && <li style={{ margin: '10px' }}>...</li>}
       </ul>
+      <InterestSearchInput
+        onSelect={uri => addInterest({ uri: personUri, interest: uri })}
+      />
       {!areInterestsLoading && (
         <a
           href={`https://www.interesting.chat/?interests=${encodeURIComponent(

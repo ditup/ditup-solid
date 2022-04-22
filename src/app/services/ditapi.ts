@@ -41,6 +41,7 @@ const comunicaBaseQuery =
   }
 
 export const ditapi = createApi({
+  reducerPath: 'ditapi',
   baseQuery: comunicaBaseQuery(),
   endpoints: builder => ({
     getUser: builder.query<User, string>({
@@ -101,24 +102,6 @@ export const useGetUserInterests = (userId: string) => {
     description: string
   }>(query, sources)
   return { errors, data, isLoading }
-}
-
-export const useGetUserInterestUris = (userId: string) => {
-  const query = useMemo(
-    () =>
-      `
-  SELECT DISTINCT ?uri
-  WHERE {
-      <${userId}> foaf:topic_interest ?uri.
-  }`,
-    [userId],
-  )
-  const sources: [string, ...string[]] = useMemo(() => [userId], [userId])
-
-  const [errors, data, isLoading] = useQuery<{
-    uri: string
-  }>(query, sources)
-  return { errors, data: data.map(({ uri }) => uri), isLoading }
 }
 
 /*import { createApi, BaseQueryFn } from '@reduxjs/toolkit/query'
