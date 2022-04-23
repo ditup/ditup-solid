@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from './app/hooks'
 import { ditapi } from './app/services/ditapi'
@@ -14,6 +13,7 @@ const Header = () => {
     <header>
       <Link to="/">ditup</Link>
       <Link to="/people/me">{isLoading ? webId : data?.name}</Link>
+      <Link to="/create">Create</Link>
       <button onClick={() => dispatch(logout())}>log out</button>
     </header>
   )

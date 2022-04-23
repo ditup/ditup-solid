@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import Login from './features/login/Login'
 import logo from './logo.png'

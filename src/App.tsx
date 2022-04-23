@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import { useAppDispatch, useAppSelector } from './app/hooks'
+import CreateDit from './CreateDit'
+import DitList from './DitList'
 import { init, selectLogin } from './features/login/loginSlice'
 import Header from './Header'
-import Home from './Home'
 import Main from './Main'
 import Person from './Person'
 import Signup from './Signup'
@@ -32,8 +33,9 @@ function App() {
     <div>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<DitList />} />
         <Route path="/people/:personId" element={<Person />} />
+        <Route path="/create" element={<CreateDit webId={login.webId} />} />
       </Routes>
     </div>
   )

@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-
-type Interest = { uri: string; label: string; description: string }
+import { Interest } from '../../types'
 
 export const interestApi = createApi({
   reducerPath: 'interestapi',

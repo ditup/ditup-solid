@@ -1,4 +1,4 @@
-import React, { FormEventHandler, useState } from 'react'
+import { FormEventHandler, useState } from 'react'
 import { useAppDispatch } from '../../app/hooks'
 import { login } from './loginSlice'
 

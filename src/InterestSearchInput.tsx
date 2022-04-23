@@ -1,13 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { interestApi } from './app/services/interestApi'
 import SearchInput from './SearchInput'
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import debounce from 'lodash.debounce'
+import { Interest } from './types'
 
 const InterestSearchInput = ({
   onSelect,
 }: {
-  onSelect: (uri: string) => void
+  onSelect: (interest: Interest) => void
 }) => {
   const [query, setQuery] = useState('')
 
@@ -23,7 +24,9 @@ const InterestSearchInput = ({
     interestApi.endpoints.searchInterests.useQuery(debouncedQuery || skipToken)
 
   const handleSelect = (uri: string) => {
-    onSelect(uri)
+    const interest = (interests ?? []).find(interest => interest.uri === uri)
+    if (!interest) throw new Error('this is a glitch')
+    onSelect(interest)
     setQuery('')
   }
   return (
