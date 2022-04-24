@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Solid Interests",
+  "name": "Solid Interests: Manage your interests over Solid Platform",
   "icons": [
     {
       "src": "favicon.ico",
