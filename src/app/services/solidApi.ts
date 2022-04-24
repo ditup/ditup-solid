@@ -10,6 +10,7 @@ import {
   getThingAll,
   getUrlAll,
   removeAll,
+  removeThing,
   removeUrl,
   saveSolidDatasetAt,
   setStringWithLocale,
@@ -51,7 +52,7 @@ interface QueryParams {
 }
 
 const solidQuery =
-  (): BaseQueryFn<QueryParams, QueryResponse[]> =>
+  (): BaseQueryFn<QueryParams, QueryResponse[], { message: string }> =>
   async ({ uri, data, fetchProperties, fetchAll = false }: QueryParams) => {
     let dataset: SolidDataset
     try {
@@ -66,7 +67,9 @@ const solidQuery =
       data.remove.forEach(([subject, predicate, object]) => {
         const thing = getThing(changedDataset ?? dataset, subject)
         if (thing) {
-          if (object === '*') {
+          if (predicate === '*') {
+            changedDataset = removeThing(changedDataset ?? dataset, thing)
+          } else if (object === '*') {
             const updatedThing = removeAll(thing, predicate)
             changedDataset = setThing(changedDataset ?? dataset, updatedThing)
           } else {
@@ -140,7 +143,12 @@ const solidQuery =
       uri: [returnThing.url],
     }))
 
-    if (!fetchAll && returnThings.length === 0)
+    if (
+      !fetchAll &&
+      returnData.length === 0 &&
+      // also don't error when mutation removed the whole thing
+      !(data?.remove ?? []).find(([, predicate]) => predicate === '*')
+    )
       return {
         error: { message: 'thing not found' },
       }
@@ -293,6 +301,16 @@ export const solidApi = createApi({
       invalidatesTags: (result, error, { thing }) => [
         { type: 'DitThing', id: thing.uri },
       ],
+    }),
+    removeDit: build.mutation<unknown, Uri>({
+      query: uri => ({
+        uri,
+        data: {
+          remove: [[uri, '*', '*']],
+        },
+        fetchProperties: {},
+      }),
+      invalidatesTags: (result, error, uri) => [{ type: 'DitThing', id: uri }],
     }),
   }),
 })
