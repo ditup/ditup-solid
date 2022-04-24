@@ -5,7 +5,7 @@ import { useAppSelector } from './app/hooks'
 import { solidApi } from './app/services/solidApi'
 import EditableTagList from './EditableTagList'
 import { selectLogin } from './features/login/loginSlice'
-import logo from './logo.png'
+import logo from './assets/main-image.png'
 
 const Person = () => {
   const personId = useParams<'personId'>().personId as string

@@ -1,0 +1,35 @@
+.header {
+  display: flex;
+  align-items: center;
+  background-color: rgb(28, 30, 31);
+  color: white;
+  position: relative;
+  height: 3rem;
+  & > * {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.5rem;
+  }
+  .homeLink {
+    display: flex;
+    align-items: center;
+    .logo {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  .separator {
+    flex-grow: 1;
+  }
+
+  a,
+  button {
+    color: white;
+    text-decoration: none;
+    &:hover {
+      background-color: salmon;
+    }
+  }
+}

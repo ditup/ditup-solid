@@ -7,7 +7,7 @@ import DitItemPage from './DitItemPage'
 import DitList from './DitList'
 import { init, selectLogin } from './features/login/loginSlice'
 import Header from './Header'
-import Main from './Main'
+import Homepage from './Homepage'
 import Person from './Person'
 import Signup from './Signup'
 import EditDitPage from './EditDitPage'
@@ -26,7 +26,7 @@ function App() {
     return (
       <div>
         <Routes>
-          <Route path="/" element={<Main />} />
+          <Route path="/" element={<Homepage />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>
       </div>
