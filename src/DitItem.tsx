@@ -1,19 +1,17 @@
+import TagList from './TagList'
 import { DitThing } from './types'
+import { Link } from 'react-router-dom'
 
 const DitItem = ({ thing }: { thing: DitThing }) => (
   <div>
     <header>
-      <span>icon</span> {thing.label} <a href={thing.uri}>link</a>
+      <span>icon: {thing.type}</span>{' '}
+      <Link to={`/items/${encodeURIComponent(thing.uri)}`}>{thing.label}</Link>{' '}
+      <a href={thing.uri}>link</a>
     </header>
     <section>{thing.description}</section>
     <section>
-      <ul>
-        {thing.tags.map(tag => (
-          <li key={tag.uri}>
-            <a title={tag.description}>{tag.label}</a>
-          </li>
-        ))}
-      </ul>
+      <TagList tags={thing.tags} />
     </section>
   </div>
 )

@@ -1,44 +1,26 @@
+import { skipToken } from '@reduxjs/toolkit/query'
+import { useAppSelector } from './app/hooks'
+import { getDitupUri, solidApi } from './app/services/solidApi'
 import DitItem from './DitItem'
-import { DitThing } from './types'
 import styles from './DitList.module.scss'
+import { selectLogin } from './features/login/loginSlice'
 
 const DitList = () => {
-  const dits: DitThing[] = [
-    {
-      type: 'idea',
-      uri: 'https://example.com/idea0',
-      label: 'This is a label',
-      description: 'this is a description of the idea',
-      tags: [
-        {
-          uri: 'example.tag',
-          label: 'example tag',
-          description: 'example tag description',
-        },
-        {
-          uri: 'example.tag',
-          label: 'example tag',
-          description: 'example tag description',
-        },
-        {
-          uri: 'example.tag',
-          label: 'example tag',
-          description: 'example tag description',
-        },
-      ],
-    },
-  ]
+  const { webId } = useAppSelector(selectLogin)
+  const { data, isLoading, isUninitialized } =
+    solidApi.endpoints.readDitItems.useQuery(
+      webId ? getDitupUri(webId) : skipToken,
+    )
+  if (isLoading || isUninitialized || !data) return <div>Loading...</div>
 
   return (
     <div>
       <ul className={styles.list}>
-        <li>
-          <DitItem thing={dits[0]} />
-        </li>
-        <li>Of</li>
-        <li>Issues</li>
-        <li>And</li>
-        <li>Ideas</li>
+        {data.map(thing => (
+          <li key={thing.uri}>
+            <DitItem thing={thing} />
+          </li>
+        ))}
       </ul>
     </div>
   )

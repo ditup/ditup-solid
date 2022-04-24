@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import { useAppDispatch, useAppSelector } from './app/hooks'
 import CreateDit from './CreateDit'
+import DitItemPage from './DitItemPage'
 import DitList from './DitList'
 import { init, selectLogin } from './features/login/loginSlice'
 import Header from './Header'
@@ -36,6 +37,7 @@ function App() {
         <Route path="/" element={<DitList />} />
         <Route path="/people/:personId" element={<Person />} />
         <Route path="/create" element={<CreateDit webId={login.webId} />} />
+        <Route path="/items/:itemUri" element={<DitItemPage />} />
       </Routes>
     </div>
   )

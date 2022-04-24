@@ -1,17 +1,11 @@
 import { FormEventHandler, useState } from 'react'
-import { solidApi } from './app/services/solidapi'
+import { getDitupUri, solidApi } from './app/services/solidApi'
 import styles from './CreateDit.module.scss'
 import EditableTagList from './EditableTagList'
 import { DitType, Uri } from './types'
-import { useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 const TYPE_OPTIONS: DitType[] = ['idea', 'problem']
-
-export const getHospexUri = (webId: string) => {
-  const baseUrl = /^(https?:\/\/.*)\/profile\/card#me$/g.exec(webId)?.[1]
-  if (!baseUrl) throw new Error('unable to generate hospex uri from webId')
-  return baseUrl + '/public/ditup.ttl'
-}
 
 const CreateDit = ({ webId }: { webId: string }) => {
   const [type, setType] = useState<DitType>()
@@ -19,17 +13,13 @@ const CreateDit = ({ webId }: { webId: string }) => {
   const [description, setDescription] = useState('')
   const [tags, setTags] = useState<Uri[]>([])
   const [uri, setUri] = useState(
-    `${getHospexUri(webId)}#${globalThis.crypto.randomUUID()}`,
+    `${getDitupUri(webId)}#${globalThis.crypto.randomUUID()}`,
   )
 
   const [createDit, { isLoading, isSuccess }] =
     solidApi.endpoints.createDit.useMutation()
 
-  const navigate = useNavigate()
-  if (isSuccess) {
-    navigate(`/items/${encodeURIComponent(uri)}`)
-    return null
-  }
+  if (isSuccess) return <Navigate to={`/items/${encodeURIComponent(uri)}`} />
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = e => {
     e.preventDefault()
@@ -55,8 +45,12 @@ const CreateDit = ({ webId }: { webId: string }) => {
   return (
     <div>
       <form className={styles.form} onSubmit={handleSubmit}>
-        <select value={type} onChange={e => setType(e.target.value as DitType)}>
-          <option disabled selected value="">
+        <select
+          value={type}
+          defaultValue=""
+          onChange={e => setType(e.target.value as DitType)}
+        >
+          <option disabled value="">
             {' '}
             -- select type --{' '}
           </option>

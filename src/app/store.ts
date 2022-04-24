@@ -1,7 +1,7 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
 import loginReducer from '../features/login/loginSlice'
 import { ditapi } from './services/ditapi'
-import { solidApi } from './services/solidapi'
+import { solidApi } from './services/solidApi'
 import { interestApi } from './services/interestApi'
 
 export const store = configureStore({

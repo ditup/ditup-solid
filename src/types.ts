@@ -8,7 +8,12 @@ export type DitThing = {
   uri: Uri
   label: string
   description: string
-  tags: Interest[]
+  tags: Uri[]
 }
 
-export type DitThingSimple = Omit<DitThing, 'tags'> & { tags: Uri[] }
+export type Person = {
+  uri: Uri
+  name: string
+  photo: string
+  interests: Uri[]
+}
