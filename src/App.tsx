@@ -10,6 +10,7 @@ import Header from './Header'
 import Main from './Main'
 import Person from './Person'
 import Signup from './Signup'
+import EditDitPage from './EditDitPage'
 
 function App() {
   const login = useAppSelector(selectLogin)
@@ -36,8 +37,9 @@ function App() {
       <Routes>
         <Route path="/" element={<DitList />} />
         <Route path="/people/:personId" element={<Person />} />
-        <Route path="/create" element={<CreateDit webId={login.webId} />} />
+        <Route path="/create" element={<CreateDit />} />
         <Route path="/items/:itemUri" element={<DitItemPage />} />
+        <Route path="/items/:itemUri/edit" element={<EditDitPage />} />
       </Routes>
     </div>
   )

@@ -2,7 +2,6 @@ import { skipToken } from '@reduxjs/toolkit/query'
 import { useParams } from 'react-router-dom'
 import { solidApi } from './app/services/solidApi'
 import DitItem from './DitItem'
-import { Link } from 'react-router-dom'
 
 const DitItemPage = () => {
   const { itemUri } = useParams<'itemUri'>()
@@ -14,15 +13,7 @@ const DitItemPage = () => {
 
   if (isLoading || isUninitialized || !data) return <div>Loading...</div>
 
-  return (
-    <>
-      <DitItem thing={data} />
-      <aside>
-        <Link to={`/items/${encodeURIComponent(itemUri)}/edit`}>Edit</Link>{' '}
-        <button>DANGER: Remove</button>
-      </aside>
-    </>
-  )
+  return <DitItem thing={data} />
 }
 
 export default DitItemPage

@@ -231,7 +231,7 @@ export const solidApi = createApi({
         { type: 'Person', id: uri },
       ],
     }),
-    createDit: build.mutation<unknown, { webId: Uri; thing: DitThing }>({
+    createDit: build.mutation<Uri, { webId: Uri; thing: DitThing }>({
       query: ({ thing }) => ({
         uri: thing.uri,
         data: {
@@ -246,6 +246,11 @@ export const solidApi = createApi({
         },
         fetchProperties: {},
       }),
+      transformResponse: ([
+        {
+          uri: [uri],
+        },
+      ]) => uri,
     }),
   }),
 })
