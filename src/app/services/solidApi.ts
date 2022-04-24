@@ -9,10 +9,12 @@ import {
   getThing,
   getThingAll,
   getUrlAll,
+  removeAll,
   removeUrl,
   saveSolidDatasetAt,
   setStringWithLocale,
   setThing,
+  setUrl,
   SolidDataset,
   ThingPersisted,
   WithChangeLog,
@@ -27,6 +29,7 @@ type Triple = [string, string, string]
 
 type MutationData = {
   add?: Triple[]
+  set?: Triple[]
   remove?: Triple[]
   setString?: Triple[] // TODO think about language strings
 }
@@ -63,8 +66,13 @@ const solidQuery =
       data.remove.forEach(([subject, predicate, object]) => {
         const thing = getThing(changedDataset ?? dataset, subject)
         if (thing) {
-          const updatedThing = removeUrl(thing, predicate, object)
-          changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+          if (object === '*') {
+            const updatedThing = removeAll(thing, predicate)
+            changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+          } else {
+            const updatedThing = removeUrl(thing, predicate, object)
+            changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+          }
         }
       })
 
@@ -80,6 +88,17 @@ const solidQuery =
             object,
             'en',
           )
+          changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+        }
+      })
+
+    if (data?.set)
+      data.set.forEach(([subject, predicate, object]) => {
+        const thing =
+          getThing(changedDataset ?? dataset, subject) ??
+          createThing({ url: subject })
+        if (thing) {
+          const updatedThing = setUrl(thing, predicate, object)
           changedDataset = setThing(changedDataset ?? dataset, updatedThing)
         }
       })
@@ -251,6 +270,29 @@ export const solidApi = createApi({
           uri: [uri],
         },
       ]) => uri,
+    }),
+    updateDit: build.mutation<Uri, { thing: DitThing }>({
+      query: ({ thing }) => ({
+        uri: thing.uri,
+        data: {
+          set: [[thing.uri, rdf.type, ditUris[thing.type]]],
+          remove: [[thing.uri, as.tag, '*']],
+          add: thing.tags.map(tag => [thing.uri, as.tag, tag] as Triple),
+          setString: [
+            [thing.uri, rdfs.label, thing.label],
+            [thing.uri, dc.description, thing.description],
+          ],
+        },
+        fetchProperties: {},
+      }),
+      transformResponse: ([
+        {
+          uri: [uri],
+        },
+      ]) => uri,
+      invalidatesTags: (result, error, { thing }) => [
+        { type: 'DitThing', id: thing.uri },
+      ],
     }),
   }),
 })

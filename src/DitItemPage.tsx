@@ -11,8 +11,8 @@ const DitItemPage = () => {
     solidApi.endpoints.readDitItem.useQuery(itemUri ?? skipToken)
 
   if (!itemUri) return <>No Content...</>
-
-  if (isLoading || isUninitialized || !data) return <div>Loading...</div>
+  if (isLoading || isUninitialized) return <div>Loading...</div>
+  if (!data) return <div>Not Found</div>
 
   return (
     <>

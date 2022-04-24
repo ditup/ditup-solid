@@ -13,12 +13,14 @@ interface DitItemFormProps {
   thing: DitThingEmptyOption
   onSubmit: (data: DitThing) => void
   disabled?: boolean
+  readonlyUri?: boolean
 }
 
 const DitItemForm = ({
   thing,
   onSubmit,
   disabled = false,
+  readonlyUri = false,
 }: DitItemFormProps) => {
   const [type, setType] = useState(thing.type)
   const [label, setLabel] = useState(thing.label)
@@ -61,7 +63,12 @@ const DitItemForm = ({
           <option key={option}>{option}</option>
         ))}
       </select>
-      <input type="text" value={uri} onChange={e => setUri(e.target.value)} />
+      <input
+        type="text"
+        disabled={readonlyUri}
+        value={uri}
+        onChange={e => setUri(e.target.value)}
+      />
       <input
         type="text"
         value={label}
