@@ -12,8 +12,11 @@ import Homepage from './Homepage'
 import Person from './Person'
 import Signup from './Signup'
 import TagPage from './TagPage'
+import usePreviousUri from './usePreviousUriAfterSolidRedirect'
 
 function App() {
+  usePreviousUri()
+
   const login = useAppSelector(selectLogin)
 
   if (login.status === 'loading') return <div>initializing</div>
