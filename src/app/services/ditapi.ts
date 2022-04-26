@@ -6,10 +6,6 @@ import { useMemo } from 'react'
 import { indexServers } from '../../config'
 import useQuery from '../../useQuery'
 
-console.log(indexServers)
-
-const sparqlEngine = new QueryEngine()
-
 type User = {
   name: string
   photo: string
@@ -26,6 +22,8 @@ const comunicaBaseQuery =
   }): Promise<
     QueryReturnValue<ResponseType[], unknown, Record<string, unknown>>
   > => {
+    const sparqlEngine = new QueryEngine()
+
     const bindingsStream = await sparqlEngine.queryBindings(query, {
       sources: [...baseSources, ...sources] as [string, ...string[]],
       fetch,
@@ -50,15 +48,37 @@ export const ditapi = createApi({
     getUser: builder.query<User, string>({
       query: (webId: string) => ({
         query: `
-      PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-      PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
-      SELECT ?name ?photo WHERE {
-        <${webId}> foaf:name ?name.
-        OPTIONAL {<${webId}> vcard:hasPhoto ?photo.}
-      }`,
+          PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+          PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
+          SELECT ?name ?photo WHERE {
+            <${webId}> foaf:name ?name.
+            OPTIONAL {<${webId}> vcard:hasPhoto ?photo.}
+          }`,
         sources: [webId],
       }),
       transformResponse: (data: User[]) => data[0],
+    }),
+    discoverPeople: builder.query<{ uri: string; count: number }[], string>({
+      query: (userId: string) => ({
+        query: `
+          PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+          PREFIX owl: <http://www.w3.org/2002/07/owl#>
+          PREFIX dbo: <http://dbpedia.org/ontology/>
+          SELECT DISTINCT ?person (COUNT(DISTINCT ?thing) as ?commonCount)
+          WHERE {
+            <${userId}> foaf:topic_interest ?thing.
+            ?person foaf:topic_interest ?thing.
+            FILTER(?person != <${userId}>)
+          }
+          GROUP BY ?person`,
+        sources: [userId, ...indexServers],
+      }),
+      transformResponse: (data: { person: string; commonCount: string }[]) =>
+        data.map(({ person, commonCount }) => ({
+          uri: person,
+          count: +commonCount,
+        })),
     }),
   }),
 })
@@ -115,7 +135,7 @@ export const useDiscoverPeople = (userId: string) => {
   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
   PREFIX owl: <http://www.w3.org/2002/07/owl#>
   PREFIX dbo: <http://dbpedia.org/ontology/>
-  SELECT DISTINCT ?person (COUNT(?thing) as ?commonCount)
+  SELECT DISTINCT ?person (COUNT(DISTINCT ?thing) as ?commonCount)
   WHERE {
     <${userId}> foaf:topic_interest ?thing.
     ?person foaf:topic_interest ?thing.

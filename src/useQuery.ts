@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react'
 import { QueryEngine } from '@comunica/query-sparql/lib/index-browser'
 import { Bindings } from '@rdfjs/types'
 
-const myEngine = new QueryEngine()
-
 const useQuery = <Result extends Record<string, string | null>>(
   query: string,
   sources: [string, ...string[]],
@@ -12,13 +10,14 @@ const useQuery = <Result extends Record<string, string | null>>(
   const [errors, setErrors] = useState<unknown[]>([])
   const [inProgress, setInProgress] = useState(false)
   useEffect(() => {
+    const myEngine = new QueryEngine()
+    const bindingsStreamPromise = myEngine.queryBindings(query, {
+      sources,
+      lenient: true,
+    })
     ;(async () => {
+      const bindingsStream = await bindingsStreamPromise
       setResults([])
-
-      const bindingsStream = await myEngine.queryBindings(query, {
-        sources,
-        lenient: true,
-      })
 
       setInProgress(true)
 
@@ -42,6 +41,13 @@ const useQuery = <Result extends Record<string, string | null>>(
         setInProgress(false)
       })
     })()
+    return () => {
+      ;(async () => {
+        const bs = await bindingsStreamPromise
+        await bs.close()
+        setResults([])
+      })()
+    }
   }, [query, sources])
   return [errors, results, inProgress]
 }

@@ -1,13 +1,12 @@
-import { useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
-import { useAppDispatch, useAppSelector } from './app/hooks'
+import { useAppSelector } from './app/hooks'
 import CreateDit from './CreateDit'
 import Discover from './Discover'
 import DitItemPage from './DitItemPage'
 import DitList from './DitList'
 import EditDitPage from './EditDitPage'
-import { init, selectLogin } from './features/login/loginSlice'
+import { selectLogin } from './features/login/loginSlice'
 import Header from './Header'
 import Homepage from './Homepage'
 import Person from './Person'
@@ -16,11 +15,6 @@ import TagPage from './TagPage'
 
 function App() {
   const login = useAppSelector(selectLogin)
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    dispatch(init())
-  }, [dispatch])
 
   if (login.status === 'loading') return <div>initializing</div>
 
