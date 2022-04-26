@@ -2,9 +2,11 @@
   /*
   TODO a better layout
   */
+  padding: 0;
+  margin: -0.5rem; /* this one doesn't work next to floats, to be reconsidered */
   list-style-type: none;
-  li {
-    margin: 1rem;
+  & > li {
+    margin: 0.5rem;
     display: inline-block;
   }
 }

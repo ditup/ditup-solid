@@ -1,6 +1,8 @@
 import { FC, useMemo } from 'react'
 import { interestApi } from './app/services/interestApi'
 import { useQueries } from './app/services/useQueries'
+import useLoggedUser from './useLoggedUser'
+import listStyles from './HorizontalList.module.scss'
 
 interface Props {
   tags: string[]
@@ -11,6 +13,9 @@ const TagList: FC<Props> = ({ tags }) => {
     () => tags.filter(uri => uri.includes('wikidata')),
     [tags],
   )
+
+  const me = useLoggedUser()
+  const highlightedTags = me?.interests ?? []
 
   const tagQueries = useQueries(interestApi.endpoints.readInterest, tagsToFind)
 
@@ -29,22 +34,23 @@ const TagList: FC<Props> = ({ tags }) => {
   })
 
   return (
-    <ul
-      style={{
-        listStyleType: 'none',
-        paddingLeft: 0,
-      }}
-    >
+    <ul className={listStyles.horizontalList}>
       {combinedTags.map(tag => (
         <li
-          style={{ margin: '10px', display: 'inline-block' }}
           key={tag.uri}
           title={
             tag.description.slice(0, 300) +
             (tag.description.length > 300 ? '...' : '')
           }
         >
-          <a href={tag.uri}>{tag.label}</a>
+          <a
+            style={{
+              color: highlightedTags.includes(tag.uri) ? 'red' : undefined,
+            }}
+            href={tag.uri}
+          >
+            {tag.label}
+          </a>
         </li>
       ))}
     </ul>
