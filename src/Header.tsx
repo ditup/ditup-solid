@@ -18,6 +18,7 @@ const Header = () => {
         <img className={styles.logo} src={logo} alt="ditup logo" /> ditup
       </Link>
       <span className={styles.separator} />
+      <Link to="/discover">Discover</Link>
       <Link to="/create">Create</Link>
       <Link to="/people/me">{!data ? webId : data.name}</Link>
       <button onClick={() => dispatch(logout())}>log out</button>

@@ -34,25 +34,21 @@ const Person = () => {
       <div>
         {isLoading ? '...' : data.name ?? ''} <a href={personUri}>link</a>
       </div>
-      {
-        <EditableTagList
-          tags={data.interests}
-          onAddTag={interest => addInterest({ uri: personUri, interest })}
-          onRemoveTag={interest => removeInterest({ uri: personUri, interest })}
-        />
-      }
-      {
-        <a
-          href={`https://www.interesting.chat/?interests=${encodeURIComponent(
-            data.interests
-              .filter(uri => uri.includes('wikidata'))
-              .map(uri => uri.split('/').pop())
-              .join(','),
-          )}`}
-        >
-          Chat with a stranger about your interests
-        </a>
-      }
+      <EditableTagList
+        tags={data.interests}
+        onAddTag={interest => addInterest({ uri: personUri, interest })}
+        onRemoveTag={interest => removeInterest({ uri: personUri, interest })}
+      />
+      <a
+        href={`https://www.interesting.chat/?interests=${encodeURIComponent(
+          data.interests
+            .filter(uri => uri.includes('wikidata'))
+            .map(uri => uri.split('/').pop())
+            .join(','),
+        )}`}
+      >
+        Chat with a stranger about your interests
+      </a>
     </div>
   )
 }

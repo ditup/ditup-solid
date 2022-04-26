@@ -1,0 +1,10 @@
+.horizontalList {
+  /*
+  TODO a better layout
+  */
+  list-style-type: none;
+  li {
+    margin: 1rem;
+    display: inline-block;
+  }
+}

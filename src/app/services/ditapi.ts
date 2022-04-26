@@ -3,7 +3,10 @@ import { fetch } from '@inrupt/solid-client-authn-browser'
 import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes'
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { useMemo } from 'react'
+import { indexServers } from '../../config'
 import useQuery from '../../useQuery'
+
+console.log(indexServers)
 
 const sparqlEngine = new QueryEngine()
 
@@ -100,6 +103,36 @@ export const useGetUserInterests = (userId: string) => {
     uri: string
     label: string
     description: string
+  }>(query, sources)
+  return { errors, data, isLoading }
+}
+
+export const useDiscoverPeople = (userId: string) => {
+  const query = useMemo(
+    () =>
+      `
+  PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  PREFIX owl: <http://www.w3.org/2002/07/owl#>
+  PREFIX dbo: <http://dbpedia.org/ontology/>
+  SELECT DISTINCT ?person (COUNT(?thing) as ?commonCount)
+  WHERE {
+    <${userId}> foaf:topic_interest ?thing.
+    ?person foaf:topic_interest ?thing.
+    FILTER(?person != <${userId}>)
+  }
+  GROUP BY ?person
+  `,
+    [userId],
+  )
+  const sources: [string, ...string[]] = useMemo(
+    () => [userId, ...indexServers],
+    [userId],
+  )
+
+  const [errors, data, isLoading] = useQuery<{
+    person: string
+    commonCount: string
   }>(query, sources)
   return { errors, data, isLoading }
 }

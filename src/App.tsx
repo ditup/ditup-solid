@@ -3,14 +3,15 @@ import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import { useAppDispatch, useAppSelector } from './app/hooks'
 import CreateDit from './CreateDit'
+import Discover from './Discover'
 import DitItemPage from './DitItemPage'
 import DitList from './DitList'
+import EditDitPage from './EditDitPage'
 import { init, selectLogin } from './features/login/loginSlice'
 import Header from './Header'
 import Homepage from './Homepage'
 import Person from './Person'
 import Signup from './Signup'
-import EditDitPage from './EditDitPage'
 
 function App() {
   const login = useAppSelector(selectLogin)
@@ -26,7 +27,7 @@ function App() {
     return (
       <div>
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="*" element={<Homepage />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>
       </div>
@@ -36,6 +37,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<DitList />} />
+        <Route path="/discover" element={<Discover />} />
         <Route path="/people/:personId" element={<Person />} />
         <Route path="/create" element={<CreateDit />} />
         <Route path="/items/:itemUri" element={<DitItemPage />} />

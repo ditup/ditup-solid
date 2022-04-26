@@ -29,29 +29,25 @@ const TagList: FC<Props> = ({ tags }) => {
   })
 
   return (
-    <div>
-      <ul
-        style={{
-          display: 'flex',
-          listStyleType: 'none',
-          flexWrap: 'wrap',
-          paddingLeft: 0,
-        }}
-      >
-        {combinedTags.map(tag => (
-          <li
-            style={{ margin: '10px' }}
-            key={tag.uri}
-            title={
-              tag.description.slice(0, 300) +
-              (tag.description.length > 300 ? '...' : '')
-            }
-          >
-            <a href={tag.uri}>{tag.label}</a>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul
+      style={{
+        listStyleType: 'none',
+        paddingLeft: 0,
+      }}
+    >
+      {combinedTags.map(tag => (
+        <li
+          style={{ margin: '10px', display: 'inline-block' }}
+          key={tag.uri}
+          title={
+            tag.description.slice(0, 300) +
+            (tag.description.length > 300 ? '...' : '')
+          }
+        >
+          <a href={tag.uri}>{tag.label}</a>
+        </li>
+      ))}
+    </ul>
   )
 }
 
