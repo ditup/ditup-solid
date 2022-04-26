@@ -16,18 +16,22 @@ export const interestApi = createApi({
       }),
       // Pick out data and prevent nested properties in a hook or selector
       transformResponse: (response: {
-        search: { concepturi: string; label: string; description: string }[]
+        search: {
+          concepturi: string
+          label: string
+          description: string
+          photos: []
+          aliases: []
+        }[]
       }) =>
-        response.search.map(({ concepturi, label, description }) => ({
+        response.search.map(({ concepturi, ...rest }) => ({
           uri: concepturi,
-          label,
-          description,
+          ...rest,
         })),
       //*/
-      providesTags: (result, error, query) =>
-        (result ?? ([] as Interest[]))
-          .map(({ uri }) => ({ type: 'Interest' as const, id: uri }))
-          .concat([{ type: 'Interest', id: 'QUERY_STRING_' + query }]),
+      providesTags: (result, error, query) => [
+        { type: 'Interest', id: 'QUERY_STRING_' + query },
+      ],
     }),
     readInterest: build.query<Interest, string>({
       query: uri => {
@@ -36,24 +40,32 @@ export const interestApi = createApi({
           url: `api.php?action=wbgetentities&ids=${id}&languages=en&format=json&origin=*`,
         }
       },
-      transformResponse: (
-        response: {
-          entities: {
-            [key: string]: {
-              labels: { en?: { value: string } }
-              descriptions: { en?: { value: string } }
-            }
-          }
-        },
-        meta,
-        uri,
-      ) => {
+      transformResponse: (response: GetEntitiesResponse, meta, uri) => {
         const entity = Object.values(response.entities)[0]
         if (!entity) throw new Error('entity not found')
+
+        const label = entity.labels.en?.value ?? ''
+        const description = entity.descriptions.en?.value ?? ''
+        const imageString = (entity.claims.P18 ?? []).map(
+          p => p.mainsnak.datavalue.value,
+        )[0]
+        const image =
+          imageString &&
+          `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(
+            imageString,
+          )}?width=300`
+        const officialWebsite = (entity.claims.P856 ?? []).map(
+          p => p.mainsnak.datavalue.value,
+        )[0]
+        const aliases = (entity.aliases.en ?? []).map(({ value }) => value)
+
         return {
           uri,
-          label: entity.labels.en?.value ?? '',
-          description: entity.descriptions.en?.value ?? '',
+          label,
+          aliases,
+          description,
+          officialWebsite,
+          image,
         }
       },
       providesTags: (result, error, uri) => [{ type: 'Interest', id: uri }],
@@ -75,3 +87,27 @@ export const getInterest = async (uri: string): Promise<Interest> => {
   const rawData = await (await fetchTurtle(dataUri)).text()
   return await parseInterest(rawData, uri)
 }*/
+
+interface GetEntitiesResponse {
+  entities: {
+    [key: string]: {
+      labels: { en?: { value: string } }
+      descriptions: { en?: { value: string } }
+      aliases: { en?: { value: string }[] }
+      claims: {
+        P18?: {
+          mainsnak: {
+            datavalue: { value: string }
+            datatype: 'commonsMedia'
+          }
+        }[]
+        P856?: {
+          mainsnak: {
+            datavalue: { value: string }
+            datatype: 'url'
+          }
+        }[]
+      }
+    }
+  }
+}

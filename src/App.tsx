@@ -12,6 +12,7 @@ import Header from './Header'
 import Homepage from './Homepage'
 import Person from './Person'
 import Signup from './Signup'
+import TagPage from './TagPage'
 
 function App() {
   const login = useAppSelector(selectLogin)
@@ -42,6 +43,7 @@ function App() {
         <Route path="/create" element={<CreateDit />} />
         <Route path="/items/:itemUri" element={<DitItemPage />} />
         <Route path="/items/:itemUri/edit" element={<EditDitPage />} />
+        <Route path="/tags/:tagUri" element={<TagPage />} />
       </Routes>
     </div>
   )

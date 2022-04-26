@@ -1,4 +1,5 @@
 import { FC, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { interestApi } from './app/services/interestApi'
 import { useQueries } from './app/services/useQueries'
 import InterestSearchInput from './InterestSearchInput'
@@ -50,7 +51,7 @@ const EditableTagList: FC<Props> = ({ tags, onAddTag, onRemoveTag }) => {
               (tag.description.length > 300 ? '...' : '')
             }
           >
-            <a href={tag.uri}>{tag.label}</a>
+            <Link to={`/tags/${encodeURIComponent(tag.uri)}`}>{tag.label}</Link>
             <button
               onClick={() => {
                 onRemoveTag(tag.uri)

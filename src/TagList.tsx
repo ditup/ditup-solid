@@ -3,6 +3,7 @@ import { interestApi } from './app/services/interestApi'
 import { useQueries } from './app/services/useQueries'
 import useLoggedUser from './useLoggedUser'
 import listStyles from './HorizontalList.module.scss'
+import { Link } from 'react-router-dom'
 
 interface Props {
   tags: string[]
@@ -43,14 +44,14 @@ const TagList: FC<Props> = ({ tags }) => {
             (tag.description.length > 300 ? '...' : '')
           }
         >
-          <a
+          <Link
             style={{
               color: highlightedTags.includes(tag.uri) ? 'red' : undefined,
             }}
-            href={tag.uri}
+            to={`/tags/${encodeURIComponent(tag.uri)}`}
           >
             {tag.label}
-          </a>
+          </Link>
         </li>
       ))}
     </ul>

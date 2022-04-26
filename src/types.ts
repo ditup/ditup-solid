@@ -1,7 +1,14 @@
 export type Uri = string
 export type DitType = 'idea' | 'problem'
 
-export type Interest = { uri: Uri; label: string; description: string }
+export type Interest = {
+  uri: Uri
+  label: string
+  description: string
+  aliases: string[]
+  image?: Uri
+  officialWebsite?: Uri
+}
 
 export type DitThing = {
   type: DitType
