@@ -1,3 +1,4 @@
+import intersection from 'lodash.intersection'
 import { useMemo } from 'react'
 import { useAppSelector } from './app/hooks'
 import { ditapi } from './app/services/ditapi'
@@ -9,6 +10,7 @@ import { selectLogin } from './features/login/loginSlice'
 import styles from './HorizontalList.module.scss'
 import PersonSummary from './PersonSummary'
 import { Person } from './types'
+import useLoggedUser from './useLoggedUser'
 
 const Discover = () => {
   const webId = useAppSelector(selectLogin).webId
@@ -31,6 +33,10 @@ const Discover = () => {
     discoveredPeopleUris,
   )
 
+  const me = useLoggedUser()
+
+  if (!me) return <>Loading self...</>
+
   if (indexServers.length === 0)
     return (
       <div>
@@ -43,6 +49,13 @@ const Discover = () => {
     .map(query => query.data)
     .filter(a => a) as Person[]
 
+  const peopleInCommon = fetchedPeople
+    .map(
+      person => [person, countMatch(person.interests, me.interests)] as const,
+    )
+    .sort((a, b) => b[1] - a[1])
+    .filter(a => !!a[1])
+
   return (
     <div>
       {(isLoading ||
@@ -50,9 +63,10 @@ const Discover = () => {
           query => query.isLoading || query.isUninitialized,
         )) && <div>Loading...</div>}
       <ul className={styles.horizontalList}>
-        {fetchedPeople.map(thing => (
-          <li key={thing.uri}>
-            <PersonSummary person={thing} />
+        {peopleInCommon.map(([person, match]) => (
+          <li key={person.uri}>
+            <PersonSummary person={person} />{' '}
+            <span>match: {Math.round(match * 1000) / 10}%</span>
           </li>
         ))}
       </ul>
@@ -61,3 +75,8 @@ const Discover = () => {
 }
 
 export default Discover
+
+const countMatch = (a: unknown[], b: unknown[]): number => {
+  const common = intersection(a, b)
+  return common.length && common.length / (a.length * b.length) ** 0.5
+}

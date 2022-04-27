@@ -17,6 +17,7 @@
     "@types/react-dom": "^18.0.1",
     "lodash.capitalize": "^4.2.1",
     "lodash.debounce": "^4.0.8",
+    "lodash.intersection": "^4.4.0",
     "rdf-namespaces": "^1.9.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -45,6 +46,7 @@
   "devDependencies": {
     "@types/lodash.capitalize": "^4.2.7",
     "@types/lodash.debounce": "^4.0.7",
+    "@types/lodash.intersection": "^4.4.7",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "eslint-config-prettier": "^8.5.0",

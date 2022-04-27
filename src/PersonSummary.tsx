@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { fetchImage } from './api'
 import logo from './assets/main-image.png'
 import styles from './PersonSummary.module.scss'
@@ -25,7 +26,10 @@ const PersonSummary: FC<PersonSummaryProps> = ({ person }) => {
     <div className={styles.container}>
       <img className={styles.avatar} src={image} />
       <div>
-        {person.name} <a href={person.uri}>link</a>
+        <Link to={`/people/${encodeURIComponent(person.uri)}`}>
+          {person.name || 'no name found'}
+        </Link>{' '}
+        <a href={person.uri}>link</a>
       </div>
       <TagList tags={person.interests} />
     </div>
