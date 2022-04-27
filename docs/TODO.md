@@ -39,7 +39,7 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
   - filter by dit type
   - sort by different kinds of relevance, creation, likes, ...
 - [ ] add footer with link to Solid, github repository, attributions of fonts etc...
-- [ ] Add License
+- [x] Add license
 - [ ] Edit person's name, and about, and photo
 
 ### Styling

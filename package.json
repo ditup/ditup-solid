@@ -1,7 +1,8 @@
 {
-  "name": "ditapp",
+  "name": "ditup-solid",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "dependencies": {
     "@comunica/query-sparql": "^2.0.7-alpha.10.0",
     "@inrupt/solid-client": "^1.21.0",
