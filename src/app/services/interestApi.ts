@@ -49,10 +49,19 @@ export const interestApi = createApi({
         const imageString = (entity.claims.P18 ?? []).map(
           p => p.mainsnak.datavalue.value,
         )[0]
+        const logoImageString = (entity.claims.P154 ?? []).map(
+          p => p.mainsnak.datavalue.value,
+        )[0]
         const image =
           imageString &&
           `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(
             imageString,
+          )}?width=300`
+
+        const logoImage =
+          logoImageString &&
+          `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(
+            logoImageString,
           )}?width=300`
         const officialWebsite = (entity.claims.P856 ?? []).map(
           p => p.mainsnak.datavalue.value,
@@ -65,7 +74,7 @@ export const interestApi = createApi({
           aliases,
           description,
           officialWebsite,
-          image,
+          image: logoImage || image,
         }
       },
       providesTags: (result, error, uri) => [{ type: 'Interest', id: uri }],
@@ -96,6 +105,12 @@ interface GetEntitiesResponse {
       aliases: { en?: { value: string }[] }
       claims: {
         P18?: {
+          mainsnak: {
+            datavalue: { value: string }
+            datatype: 'commonsMedia'
+          }
+        }[]
+        P154?: {
           mainsnak: {
             datavalue: { value: string }
             datatype: 'commonsMedia'
