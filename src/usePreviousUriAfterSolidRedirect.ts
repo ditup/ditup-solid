@@ -7,7 +7,6 @@ const usePreviousUriAfterSolidRedirect = () => {
 
   onSessionRestore(url => {
     navigate(new URL(url).pathname)
-    console.log('navigating', url)
   })
 }
 

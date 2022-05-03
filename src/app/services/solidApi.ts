@@ -1,4 +1,5 @@
 // Need to use the React-specific entry point to import createApi
+import { QueryEngine } from '@comunica/query-sparql'
 import {
   addUrl,
   createSolidDataset,
@@ -25,7 +26,7 @@ import {
 import { fetch } from '@inrupt/solid-client-authn-browser'
 import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react'
 import { as, dct, foaf, rdf, rdfs, vcard } from 'rdf-namespaces'
-import { ditUris } from '../../config'
+import { ditUris, indexInboxes, indexServers } from '../../config'
 import { DitThing, DitType, Person, Uri } from '../../types'
 
 type Triple<T = string> = [string, string, T]
@@ -177,7 +178,7 @@ const solidQuery =
 export const solidApi = createApi({
   reducerPath: 'solidapi',
   baseQuery: solidQuery(),
-  tagTypes: ['Person', 'DitThing'],
+  tagTypes: ['Person', 'DitThing', 'Discoverability'],
   endpoints: build => ({
     readPerson: build.query<Person, string>({
       query: uri => ({
@@ -368,6 +369,56 @@ export const solidApi = createApi({
         fetchProperties: {},
       }),
       invalidatesTags: (result, error, uri) => [{ type: 'DitThing', id: uri }],
+    }),
+    readDiscoverability: build.query<Uri[], Uri>({
+      queryFn: async uri => {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        if (indexServers.length === 0)
+          throw new Error('no index servers defined')
+
+        const sparqlEngine = new QueryEngine()
+        sparqlEngine.invalidateHttpCache()
+
+        const bindingsStream = await sparqlEngine.queryBindings(
+          `
+          SELECT DISTINCT ?tag WHERE {
+            <${uri}> <${foaf.topic_interest}> | <${as.tag}> ?tag.
+          }
+          `,
+          {
+            sources: [...indexServers] as [string, ...string[]],
+            fetch,
+          },
+        )
+
+        const tags = (await bindingsStream.toArray())
+          .map(binding => binding.get('tag')?.value ?? '')
+          .filter(a => !!a)
+
+        return { data: tags }
+      },
+      providesTags: (result, error, uri) => [
+        { type: 'Discoverability', id: uri },
+      ],
+    }),
+    notifyIndex: build.mutation<number, { uri: string; person: string }>({
+      queryFn: async ({ uri, person }) => {
+        await Promise.all(
+          indexInboxes.map(inbox =>
+            fetch(inbox, {
+              headers: { 'content-type': 'application/ld+json' },
+              method: 'POST',
+              body: JSON.stringify({ actor: person, object: uri }),
+            }),
+          ),
+        )
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        return { data: 0 }
+      },
+      invalidatesTags: (result, error, param) => [
+        { type: 'Discoverability', id: param.uri },
+      ],
     }),
   }),
 })

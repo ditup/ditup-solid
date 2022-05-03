@@ -50,11 +50,7 @@ const DitItemForm = ({
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <select
-        value={type}
-        defaultValue=""
-        onChange={e => setType(e.target.value as DitType)}
-      >
+      <select value={type} onChange={e => setType(e.target.value as DitType)}>
         <option disabled value="">
           {' '}
           -- select type --{' '}

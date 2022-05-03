@@ -3,9 +3,10 @@ import { useParams } from 'react-router-dom'
 import { fetchImage } from './api'
 import { useAppSelector } from './app/hooks'
 import { solidApi } from './app/services/solidApi'
+import logo from './assets/main-image.png'
+import Discoverability from './Discoverability'
 import EditableTagList from './EditableTagList'
 import { selectLogin } from './features/login/loginSlice'
-import logo from './assets/main-image.png'
 
 const Person = () => {
   const personId = useParams<'personId'>().personId as string
@@ -14,6 +15,9 @@ const Person = () => {
   const { data, isLoading } = solidApi.endpoints.readPerson.useQuery(personUri)
   const [addInterest] = solidApi.endpoints.addInterest.useMutation()
   const [removeInterest] = solidApi.endpoints.removeInterest.useMutation()
+  const [notifyIndex] = solidApi.endpoints.notifyIndex.useMutation()
+  const { data: discoverableTags } =
+    solidApi.endpoints.readDiscoverability.useQuery(personUri)
 
   const [image, setImage] = useState(logo)
 
@@ -28,6 +32,19 @@ const Person = () => {
 
   if (!data) return <div>Loading...</div>
 
+  const handleAddTag = async (interest: string) => {
+    await addInterest({ uri: personUri, interest })
+    // update index only if the person is already indexed
+    if (discoverableTags?.length ?? 0 > 0)
+      await notifyIndex({ uri: personUri, person: personUri })
+  }
+  const handleRemoveTag = async (interest: string) => {
+    await removeInterest({ uri: personUri, interest })
+    // update index only if the person is already indexed
+    if (discoverableTags?.length ?? 0 > 0)
+      await notifyIndex({ uri: personUri, person: personUri })
+  }
+
   return (
     <div>
       <img src={image} style={{ width: '10rem' }} />
@@ -36,8 +53,8 @@ const Person = () => {
       </div>
       <EditableTagList
         tags={data.interests}
-        onAddTag={interest => addInterest({ uri: personUri, interest })}
-        onRemoveTag={interest => removeInterest({ uri: personUri, interest })}
+        onAddTag={handleAddTag}
+        onRemoveTag={handleRemoveTag}
       />
       <a
         href={`https://www.interesting.chat/?interests=${encodeURIComponent(
@@ -49,6 +66,11 @@ const Person = () => {
       >
         Chat with a stranger about your interests
       </a>
+      <Discoverability
+        uri={personUri}
+        tags={data.interests}
+        editable={personUri === loginUri}
+      />
     </div>
   )
 }

@@ -1,21 +1,23 @@
 import { Navigate } from 'react-router-dom'
-import { useAppSelector } from './app/hooks'
 import { getDitupUri, solidApi } from './app/services/solidApi'
 import DitItemForm from './DitItemForm'
-import { selectLogin } from './features/login/loginSlice'
 import { DitThingBasic } from './types'
+import useLoggedUser from './useLoggedUser'
 
 const CreateDit = () => {
-  const webId = useAppSelector(selectLogin).webId
+  const webId = useLoggedUser()?.uri
 
   const [createDit, { isLoading, isSuccess, data }] =
     solidApi.endpoints.createDit.useMutation()
 
+  if (!webId) return <>Not Logged In</>
+
   if (isSuccess && data)
     return <Navigate to={`/items/${encodeURIComponent(data)}`} />
 
-  const handleSubmit = (thing: DitThingBasic) =>
+  const handleSubmit = (thing: DitThingBasic) => {
     createDit({ thing: { ...thing, creator: webId } })
+  }
 
   return (
     <div>

@@ -42,7 +42,8 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [ ] add footer with link to Solid, github repository, attributions of fonts etc...
 - [x] Add license
 - [ ] Edit person's name, and about, and photo
-- [ ] Allow people to add and remove themselves and their items from the index from within the app - show which items are public and which not
+- [x] Allow people to add themselves and their items from the index from within the app - show which items are public and which not
+  - [ ] also allow removing self and items from index
 - [ ] cache user images, so they don't load every time
 
 ### Styling
