@@ -11,10 +11,11 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [x] CRUD my basic items (Ideas, Problems)
 - [ ] Make more basic items (Projects, Events, Groups/Teams, ...)
 - [x] Make a dummy readonly index
-- [ ] Setup a dummy readonly index online
+- [x] Setup a dummy readonly index online
 - [ ] Show indexed items of other people
 - [x] Show other people with my interests
-- [ ] Make & use index that accepts suggestions for indexing and updates itself
+- [ ] Make & use index that accepts suggestions for indexing
+- [x] Index also updates itself, authenticates people, allows users to remove themselves and their items from the index...
 - [ ] See details of items - comment, like, remember
 - [ ] Connect with people - write to humans
 - [ ] Make it nice looking (get design from somebody, and implement it!)
@@ -41,6 +42,7 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [ ] add footer with link to Solid, github repository, attributions of fonts etc...
 - [x] Add license
 - [ ] Edit person's name, and about, and photo
+- [ ] Allow people to add and remove themselves and their items from the index from within the app - show which items are public and which not
 
 ### Styling
 
