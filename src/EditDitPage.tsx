@@ -1,10 +1,13 @@
 import { skipToken } from '@reduxjs/toolkit/query'
 import { Navigate, useParams } from 'react-router-dom'
+import { useAppSelector } from './app/hooks'
 import { solidApi } from './app/services/solidApi'
 import DitItemForm from './DitItemForm'
-import { DitThing } from './types'
+import { selectLogin } from './features/login/loginSlice'
+import { DitThingBasic } from './types'
 
 const DitItemFormPage = () => {
+  const webId = useAppSelector(selectLogin).webId
   const { itemUri } = useParams<'itemUri'>()
 
   const { data, isLoading, isUninitialized } =
@@ -20,7 +23,8 @@ const DitItemFormPage = () => {
   if (isLoading || isUninitialized) return <div>Loading...</div>
   if (!data) return <div>Not Found</div>
 
-  const handleSubmit = (thing: DitThing) => updateDit({ thing })
+  const handleSubmit = (thing: DitThingBasic) =>
+    updateDit({ thing: { ...thing, creator: webId } })
 
   return (
     <DitItemForm

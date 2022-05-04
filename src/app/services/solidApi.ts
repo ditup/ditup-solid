@@ -3,6 +3,7 @@ import {
   addUrl,
   createSolidDataset,
   createThing,
+  getDatetimeAll,
   getSolidDataset,
   getStringEnglishAll,
   getStringNoLocaleAll,
@@ -13,6 +14,7 @@ import {
   removeThing,
   removeUrl,
   saveSolidDatasetAt,
+  setDatetime,
   setStringWithLocale,
   setThing,
   setUrl,
@@ -22,17 +24,18 @@ import {
 } from '@inrupt/solid-client'
 import { fetch } from '@inrupt/solid-client-authn-browser'
 import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react'
-import { as, dc, foaf, rdf, rdfs, vcard } from 'rdf-namespaces'
+import { as, dct, foaf, rdf, rdfs, vcard } from 'rdf-namespaces'
 import { ditUris } from '../../config'
 import { DitThing, DitType, Person, Uri } from '../../types'
 
-type Triple = [string, string, string]
+type Triple<T = string> = [string, string, T]
 
 type MutationData = {
   add?: Triple[]
   set?: Triple[]
   remove?: Triple[]
   setString?: Triple[] // TODO think about language strings
+  setDatetime?: Triple<Date>[]
 }
 
 type FetchShape = {
@@ -95,6 +98,17 @@ const solidQuery =
         }
       })
 
+    if (data?.setDatetime)
+      data.setDatetime.forEach(([subject, predicate, object]) => {
+        const thing =
+          getThing(changedDataset ?? dataset, subject) ??
+          createThing({ url: subject })
+        if (thing) {
+          const updatedThing = setDatetime(thing, predicate, object)
+          changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+        }
+      })
+
     if (data?.set)
       data.set.forEach(([subject, predicate, object]) => {
         const thing =
@@ -137,6 +151,7 @@ const solidQuery =
             ...getUrlAll(returnThing, value),
             ...getStringEnglishAll(returnThing, value),
             ...getStringNoLocaleAll(returnThing, value),
+            ...getDatetimeAll(returnThing, value),
           ],
         ]),
       ),
@@ -187,11 +202,16 @@ export const solidApi = createApi({
         fetchProperties: {
           type: rdf.type,
           label: rdfs.label,
-          description: dc.description,
+          description: dct.description,
           tags: as.tag,
+          creator: dct.creator,
+          createdAt: dct.created,
+          updatedAt: dct.modified,
         },
       }),
-      transformResponse: ([{ uri, type, label, description, tags }]) => ({
+      transformResponse: ([
+        { uri, type, label, description, tags, creator, createdAt, updatedAt },
+      ]) => ({
         uri: uri[0],
         type:
           (Object.keys(ditUris) as DitType[]).find(
@@ -200,6 +220,11 @@ export const solidApi = createApi({
         label: label[0],
         description: description[0],
         tags,
+        creator: creator[0],
+        createdAt: createdAt[0]
+          ? new Date(createdAt[0]).getTime()
+          : (undefined as unknown as number), // an ugly hack, just to take care of things without creation date
+        updatedAt: updatedAt[0] ? new Date(updatedAt[0]).getTime() : undefined,
       }),
       providesTags: (result, error, uri) => [{ type: 'DitThing', id: uri }],
     }),
@@ -210,23 +235,43 @@ export const solidApi = createApi({
         fetchProperties: {
           type: rdf.type,
           label: rdfs.label,
-          description: dc.description,
+          description: dct.description,
           tags: as.tag,
+          creator: dct.creator,
+          createdAt: dct.created,
+          updatedAt: dct.modified,
         },
       }),
-      transformResponse: things => {
-        return things
-          .map(({ uri, type, label, description, tags }) => ({
-            uri: uri[0],
-            type: (Object.keys(ditUris) as DitType[]).find(key =>
-              type.includes(ditUris[key]),
-            ),
-            label: label[0],
-            description: description[0],
-            tags,
-          }))
-          .filter(thing => typeof thing.type !== 'undefined') as DitThing[]
-      },
+      transformResponse: things =>
+        things
+          .map(
+            ({
+              uri,
+              type,
+              label,
+              description,
+              tags,
+              creator,
+              createdAt,
+              updatedAt,
+            }) => ({
+              uri: uri[0],
+              type: (Object.keys(ditUris) as DitType[]).find(key =>
+                type.includes(ditUris[key]),
+              ),
+              label: label[0],
+              description: description[0],
+              tags,
+              creator: creator[0],
+              createdAt: createdAt[0]
+                ? new Date(createdAt[0]).getTime()
+                : undefined,
+              updatedAt: updatedAt[0]
+                ? new Date(updatedAt[0]).getTime()
+                : undefined,
+            }),
+          )
+          .filter(thing => typeof thing.type !== 'undefined') as DitThing[],
       providesTags: results =>
         (results ?? []).map(result => ({ type: 'DitThing', id: result.uri })),
     }),
@@ -258,7 +303,10 @@ export const solidApi = createApi({
         { type: 'Person', id: uri },
       ],
     }),
-    createDit: build.mutation<Uri, { webId: Uri; thing: DitThing }>({
+    createDit: build.mutation<
+      Uri,
+      { thing: Omit<DitThing, 'createdAt' | 'updatedAt'> }
+    >({
       query: ({ thing }) => ({
         uri: thing.uri,
         data: {
@@ -268,8 +316,10 @@ export const solidApi = createApi({
           ],
           setString: [
             [thing.uri, rdfs.label, thing.label],
-            [thing.uri, dc.description, thing.description],
+            [thing.uri, dct.description, thing.description],
           ],
+          setDatetime: [[thing.uri, dct.created, new Date()]],
+          set: [[thing.uri, dct.creator, thing.creator]],
         },
         fetchProperties: {},
       }),
@@ -279,17 +329,24 @@ export const solidApi = createApi({
         },
       ]) => uri,
     }),
-    updateDit: build.mutation<Uri, { thing: DitThing }>({
+    updateDit: build.mutation<
+      Uri,
+      { thing: Omit<DitThing, 'createdAt' | 'updatedAt'> }
+    >({
       query: ({ thing }) => ({
         uri: thing.uri,
         data: {
-          set: [[thing.uri, rdf.type, ditUris[thing.type]]],
+          set: [
+            [thing.uri, rdf.type, ditUris[thing.type]],
+            [thing.uri, dct.creator, thing.creator],
+          ],
           remove: [[thing.uri, as.tag, '*']],
           add: thing.tags.map(tag => [thing.uri, as.tag, tag] as Triple),
           setString: [
             [thing.uri, rdfs.label, thing.label],
-            [thing.uri, dc.description, thing.description],
+            [thing.uri, dct.description, thing.description],
           ],
+          setDatetime: [[thing.uri, dct.modified, new Date()]],
         },
         fetchProperties: {},
       }),

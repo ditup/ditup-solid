@@ -3,7 +3,7 @@ import { useAppSelector } from './app/hooks'
 import { getDitupUri, solidApi } from './app/services/solidApi'
 import DitItemForm from './DitItemForm'
 import { selectLogin } from './features/login/loginSlice'
-import { DitThing } from './types'
+import { DitThingBasic } from './types'
 
 const CreateDit = () => {
   const webId = useAppSelector(selectLogin).webId
@@ -14,7 +14,8 @@ const CreateDit = () => {
   if (isSuccess && data)
     return <Navigate to={`/items/${encodeURIComponent(data)}`} />
 
-  const handleSubmit = (thing: DitThing) => createDit({ webId, thing })
+  const handleSubmit = (thing: DitThingBasic) =>
+    createDit({ thing: { ...thing, creator: webId } })
 
   return (
     <div>

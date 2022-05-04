@@ -16,7 +16,15 @@ export type DitThing = {
   label: string
   description: string
   tags: Uri[]
+  creator: Uri
+  createdAt: number
+  updatedAt?: number
 }
+
+export type DitThingBasic = Omit<
+  DitThing,
+  'creator' | 'createdAt' | 'updatedAt'
+>
 
 export type Person = {
   uri: Uri

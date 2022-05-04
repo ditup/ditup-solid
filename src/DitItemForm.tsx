@@ -1,17 +1,17 @@
 import { FormEventHandler, useState } from 'react'
 import styles from './DitItemForm.module.scss'
 import EditableTagList from './EditableTagList'
-import { DitThing, DitType, Uri } from './types'
+import { DitThingBasic, DitType, Uri } from './types'
 
 const TYPE_OPTIONS: DitType[] = ['idea', 'problem']
 
-interface DitThingEmptyOption extends Omit<DitThing, 'type'> {
+interface DitThingEmptyOption extends Omit<DitThingBasic, 'type'> {
   type: DitType | ''
 }
 
 interface DitItemFormProps {
   thing: DitThingEmptyOption
-  onSubmit: (data: DitThing) => void
+  onSubmit: (data: DitThingBasic) => void
   disabled?: boolean
   readonlyUri?: boolean
 }

@@ -14,8 +14,8 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [x] Setup a dummy readonly index online
 - [ ] Show indexed items of other people
 - [x] Show other people with my interests
-- [ ] Make & use index that accepts suggestions for indexing
-- [x] Index also updates itself, authenticates people, allows users to remove themselves and their items from the index...
+- [x] Make & use index that accepts suggestions for indexing
+- [ ] Index also updates itself, authenticates people, allows users to remove themselves and their items from the index...
 - [ ] See details of items - comment, like, remember
 - [ ] Connect with people - write to humans
 - [ ] Make it nice looking (get design from somebody, and implement it!)
@@ -33,7 +33,7 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 ## Smaller tasks
 
 - [ ] Figure out a proper vocabulary
-- [ ] Add creator to Dit Thing
+- [x] Add creator to Dit Thing
 - [ ] Use Comunica streaming with rtk-query
 - [ ] 404 page
 - [ ] A filter on Dit List
@@ -43,6 +43,7 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [x] Add license
 - [ ] Edit person's name, and about, and photo
 - [ ] Allow people to add and remove themselves and their items from the index from within the app - show which items are public and which not
+- [ ] cache user images, so they don't load every time
 
 ### Styling
 
@@ -51,3 +52,4 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [ ] Style tag page
 - [ ] Style dit list and item
 - [ ] Style dit form
+- [ ] Style list with people
