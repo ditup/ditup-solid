@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom'
+import styles from './DitItem.module.scss'
 import TagList from './TagList'
 import { DitThing } from './types'
-import { Link } from 'react-router-dom'
 
 const DitItem = ({ thing }: { thing: DitThing }) => (
-  <div>
+  <div className={styles.ditContainer}>
     <header>
       <span>icon: {thing.type}</span>{' '}
       <Link to={`/items/${encodeURIComponent(thing.uri)}`}>{thing.label}</Link>{' '}

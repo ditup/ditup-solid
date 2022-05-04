@@ -5,3 +5,21 @@
     display: inline-block;
   }
 }
+
+$gutter: 1.2rem;
+
+.masonryGrid {
+  display: flex;
+  margin-left: -$gutter; /* gutter size offset */
+  padding: $gutter;
+  width: auto;
+
+  .masonryGridColumn {
+    padding-left: $gutter; /* gutter size */
+    background-clip: padding-box;
+
+    & > * {
+      margin-bottom: $gutter;
+    }
+  }
+}

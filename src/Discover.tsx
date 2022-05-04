@@ -7,7 +7,7 @@ import { solidApi } from './app/services/solidApi'
 import { useQueries } from './app/services/useQueries'
 import { indexServers } from './config'
 import { selectLogin } from './features/login/loginSlice'
-import styles from './HorizontalList.module.scss'
+import HorizontalList from './HorizontalList'
 import PersonSummary from './PersonSummary'
 import { Person } from './types'
 import useLoggedUser from './useLoggedUser'
@@ -62,14 +62,14 @@ const Discover = () => {
         personQueries.find(
           query => query.isLoading || query.isUninitialized,
         )) && <div>Loading...</div>}
-      <ul className={styles.horizontalList}>
+      <HorizontalList>
         {peopleInCommon.map(([person, match]) => (
-          <li key={person.uri}>
+          <div key={person.uri}>
             <PersonSummary person={person} />{' '}
             <span>match: {Math.round(match * 1000) / 10}%</span>
-          </li>
+          </div>
         ))}
-      </ul>
+      </HorizontalList>
     </div>
   )
 }

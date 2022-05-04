@@ -2,8 +2,8 @@ import { skipToken } from '@reduxjs/toolkit/query'
 import { useAppSelector } from './app/hooks'
 import { getDitupUri, solidApi } from './app/services/solidApi'
 import DitItem from './DitItem'
-import styles from './HorizontalList.module.scss'
 import { selectLogin } from './features/login/loginSlice'
+import HorizontalList from './HorizontalList'
 
 const DitList = () => {
   const { webId } = useAppSelector(selectLogin)
@@ -14,15 +14,13 @@ const DitList = () => {
   if (isLoading || isUninitialized || !data) return <div>Loading...</div>
 
   return (
-    <div>
-      <ul className={styles.horizontalList}>
-        {data.map(thing => (
-          <li key={thing.uri}>
-            <DitItem thing={thing} />
-          </li>
-        ))}
-      </ul>
-    </div>
+    <HorizontalList>
+      {data.map(thing => (
+        <div key={thing.uri}>
+          <DitItem thing={thing} />
+        </div>
+      ))}
+    </HorizontalList>
   )
 }
 
