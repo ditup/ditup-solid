@@ -7,6 +7,7 @@ import logo from './assets/main-image.png'
 import Discoverability from './Discoverability'
 import EditableTagList from './EditableTagList'
 import { selectLogin } from './features/login/loginSlice'
+import TagList from './TagList'
 
 const Person = () => {
   const personId = useParams<'personId'>().personId as string
@@ -20,6 +21,8 @@ const Person = () => {
     solidApi.endpoints.readDiscoverability.useQuery(personUri)
 
   const [image, setImage] = useState(logo)
+
+  const isMe = personUri === loginUri
 
   useEffect(() => {
     ;(async () => {
@@ -45,6 +48,8 @@ const Person = () => {
       await notifyIndex({ uri: personUri, person: personUri })
   }
 
+  const Tags = isMe ? EditableTagList : TagList
+
   return (
     <div>
       <img src={image} style={{ width: '10rem' }} />
@@ -60,21 +65,23 @@ const Person = () => {
           <i aria-hidden="true" className="icon-external-link" />
         </a>
       </div>
-      <EditableTagList
+      <Tags
         tags={data.interests}
         onAddTag={handleAddTag}
         onRemoveTag={handleRemoveTag}
       />
-      <a
-        href={`https://www.interesting.chat/?interests=${encodeURIComponent(
-          data.interests
-            .filter(uri => uri.includes('wikidata'))
-            .map(uri => uri.split('/').pop())
-            .join(','),
-        )}`}
-      >
-        Chat with a stranger about your interests
-      </a>
+      {isMe && (
+        <a
+          href={`https://www.interesting.chat/?interests=${encodeURIComponent(
+            data.interests
+              .filter(uri => uri.includes('wikidata'))
+              .map(uri => uri.split('/').pop())
+              .join(','),
+          )}`}
+        >
+          Chat with a stranger about your interests
+        </a>
+      )}
       <Discoverability
         uri={personUri}
         tags={data.interests}

@@ -2,18 +2,24 @@ const SearchInput = ({
   value,
   options,
   isLoading,
+  placeholder,
   onChange,
   onSelect,
 }: {
   value: string
   options: { label: string; value: string }[]
   isLoading: boolean
+  placeholder: string
   onChange: (value: string) => void
   onSelect: (value: string) => void
 }) => {
   return (
     <>
-      <input value={value} onChange={e => onChange(e.target.value)} />
+      <input
+        placeholder={placeholder}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+      />
       {isLoading && 'searching'}
       <ul>
         {options.map(option => (

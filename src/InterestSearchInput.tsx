@@ -7,8 +7,10 @@ import { Interest } from './types'
 
 const InterestSearchInput = ({
   onSelect,
+  placeholder = 'find topic',
 }: {
   onSelect: (interest: Interest) => void
+  placeholder?: string
 }) => {
   const [query, setQuery] = useState('')
 
@@ -31,6 +33,7 @@ const InterestSearchInput = ({
   }
   return (
     <SearchInput
+      placeholder={placeholder}
       value={query}
       options={((query && interests) || []).map(
         ({ label, description, uri }) => ({

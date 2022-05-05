@@ -53,6 +53,7 @@ const EditableTagList: FC<Props> = ({ tags, onAddTag, onRemoveTag }) => {
           >
             <Link to={`/tags/${encodeURIComponent(tag.uri)}`}>{tag.label}</Link>
             <button
+              title={`Remove ${tag.label} from your interests`}
               onClick={() => {
                 onRemoveTag(tag.uri)
               }}
@@ -62,7 +63,10 @@ const EditableTagList: FC<Props> = ({ tags, onAddTag, onRemoveTag }) => {
           </li>
         ))}
       </ul>
-      <InterestSearchInput onSelect={tag => onAddTag(tag.uri)} />
+      <InterestSearchInput
+        placeholder="add interest"
+        onSelect={tag => onAddTag(tag.uri)}
+      />
     </div>
   )
 }
