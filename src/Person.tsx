@@ -49,7 +49,16 @@ const Person = () => {
     <div>
       <img src={image} style={{ width: '10rem' }} />
       <div>
-        {isLoading ? '...' : data.name ?? ''} <a href={personUri}>link</a>
+        {isLoading ? '...' : data.name ?? ''}{' '}
+        <a
+          href={personUri}
+          title={`Go directly to ${data.name || 'this person'}'s Solid Profile`}
+          aria-label={`Go directly to ${
+            data.name || 'this person'
+          }'s Solid Profile`}
+        >
+          <i aria-hidden="true" className="icon-external-link" />
+        </a>
       </div>
       <EditableTagList
         tags={data.interests}

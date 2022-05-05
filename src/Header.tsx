@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from './app/hooks'
 import { solidApi } from './app/services/solidApi'
 import { logout, selectLogin } from './features/login/loginSlice'
 import styles from './Header.module.scss'
-import logo from './assets/logo-white.svg'
 
 const Header = () => {
   const webId = useAppSelector(selectLogin).webId
@@ -15,7 +14,10 @@ const Header = () => {
   return (
     <header className={styles.header}>
       <Link className={styles.homeLink} to="/">
-        <img className={styles.logo} src={logo} alt="ditup logo" /> ditup
+        <span className={styles.logo}>
+          <i className="icon-ditup" aria-hidden="true" />
+        </span>
+        ditup
       </Link>
       <span className={styles.separator} />
       <Link to="/discover">Discover</Link>

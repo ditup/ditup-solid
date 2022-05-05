@@ -1,5 +1,8 @@
 @import-normalize;
 
+/* import icons */
+@import './assets/fontello/css/fontello.css';
+
 /* reset all button styling */
 button {
   all: unset;

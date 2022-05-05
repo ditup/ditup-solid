@@ -59,7 +59,15 @@ const Discoverability: FC<Props> = ({ editable, uri, tags }) => {
 
   return (
     <div>
-      {indexed ? 'eye open' : 'eye closed'}{' '}
+      {indexed ? (
+        <span>
+          <i className="icon-eye" /> Indexed
+        </span>
+      ) : (
+        <span>
+          <i className="icon-eye-off" /> Unlisted
+        </span>
+      )}{' '}
       {
         <DiscoverabilityAction
           disabled={isLoading}

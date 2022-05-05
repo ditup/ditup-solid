@@ -32,6 +32,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "generate-icons": "npx fontello-cli install --config src/assets/fontello/config.json --css src/assets/fontello/css/ --font src/assets/fontello/font/",
     "eject": "react-scripts eject",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md,css,scss}\"",
     "lint": "eslint . --ext .ts --ext .tsx"

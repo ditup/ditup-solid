@@ -15,8 +15,11 @@
     display: flex;
     align-items: center;
     .logo {
-      width: 2rem;
-      height: 2rem;
+      font-size: 2rem;
+      i::before {
+        margin-left: 0;
+        margin-right: 0;
+      }
     }
   }
 

@@ -57,7 +57,7 @@ const EditableTagList: FC<Props> = ({ tags, onAddTag, onRemoveTag }) => {
                 onRemoveTag(tag.uri)
               }}
             >
-              remove
+              <i className="icon-close" />
             </button>
           </li>
         ))}

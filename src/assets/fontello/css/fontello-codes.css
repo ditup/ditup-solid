@@ -1,0 +1,8 @@
+
+.icon-close:before { content: '\e800'; } /* '' */
+.icon-eye:before { content: '\e801'; } /* '' */
+.icon-eye-off:before { content: '\e802'; } /* '' */
+.icon-problem:before { content: '\e803'; } /* '' */
+.icon-ditup:before { content: '\e804'; } /* '' */
+.icon-external-link:before { content: '\f08e'; } /* '' */
+.icon-idea:before { content: '\f0eb'; } /* '' */
