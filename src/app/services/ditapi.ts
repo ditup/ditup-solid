@@ -2,6 +2,7 @@ import { QueryEngine } from '@comunica/query-sparql/lib/index-browser'
 import { fetch } from '@inrupt/solid-client-authn-browser'
 import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes'
 import { createApi } from '@reduxjs/toolkit/query/react'
+import { as, foaf } from 'rdf-namespaces'
 import { useMemo } from 'react'
 import { indexServers } from '../../config'
 import useQuery from '../../useQuery'
@@ -77,6 +78,23 @@ export const ditapi = createApi({
       transformResponse: (data: { person: string; commonCount: string }[]) =>
         data.map(({ person, commonCount }) => ({
           uri: person,
+          count: +commonCount,
+        })),
+    }),
+    discoverDits: builder.query<{ uri: string; count: number }[], string>({
+      query: (userId: string) => ({
+        query: `
+          SELECT DISTINCT ?dit (COUNT(DISTINCT ?thing) as ?commonCount)
+          WHERE {
+            <${userId}> <${foaf.topic_interest}> ?thing.
+            ?dit <${as.tag}> ?thing.
+          }
+          GROUP BY ?dit`,
+        sources: [userId, ...indexServers],
+      }),
+      transformResponse: (data: { dit: string; commonCount: string }[]) =>
+        data.map(({ dit, commonCount }) => ({
+          uri: dit,
           count: +commonCount,
         })),
     }),
