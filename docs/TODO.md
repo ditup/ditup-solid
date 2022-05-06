@@ -9,10 +9,10 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [x] Sign in
 - [x] CRD interests of self
 - [x] CRUD my basic items (Ideas, Problems)
-- [ ] Make more basic items (Projects, Events, Groups/Teams, ...)
+- [ ] Make more basic items (Projects, Events, Groups/Teams, Questions, Things I want to learn ...)
 - [x] Make a dummy readonly index
 - [x] Setup a dummy readonly index online
-- [ ] Show indexed items of other people
+- [x] Show indexed items of other people
 - [x] Show other people with my interests
 - [x] Make & use index that accepts suggestions for indexing
 - [ ] Index also updates itself, authenticates people, allows users to remove themselves and their items from the index...
@@ -34,7 +34,7 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 
 - [ ] Figure out a proper vocabulary
 - [x] Add creator to Dit Thing
-- [ ] Use Comunica streaming with rtk-query
+- [ ] Use Comunica streaming with rtk-query (so things show up faster)
 - [ ] 404 page
 - [ ] A filter on Dit List
   - filter by dit type
@@ -45,10 +45,12 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [x] Allow people to add themselves and their items from the index from within the app - show which items are public and which not
   - [ ] also allow removing self and items from index
 - [ ] cache user images, so they don't load every time
+- [ ] list dits related to a tag (mine and other people's) on tag page
+- [ ] list person's dits on person page
 
 ### Styling
 
-- [ ] Set up and use icons with fontello
+- [x] Set up and use icons with fontello
 - [ ] Style tag lists and tags (readonly, and editable lists)
 - [ ] Style tag page
 - [ ] Style dit list and item
