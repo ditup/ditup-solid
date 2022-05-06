@@ -45,7 +45,8 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [x] Allow people to add themselves and their items from the index from within the app - show which items are public and which not
   - [ ] also allow removing self and items from index
 - [ ] cache user images, so they don't load every time
-- [ ] list dits related to a tag (mine and other people's) on tag page
+- [x] list dits related to a tag (mine and other people's) on tag page
+  - [ ] also list my dits
 - [ ] list person's dits on person page
 
 ### Styling

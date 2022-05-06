@@ -33,7 +33,7 @@ export const interestApi = createApi({
         { type: 'Interest', id: 'QUERY_STRING_' + query },
       ],
     }),
-    readInterest: build.query<Interest, string>({
+    readInterest: build.query<Interest | undefined, string>({
       query: uri => {
         const id = uri.match(wikidataRegex)?.[2] ?? ''
         return {
@@ -41,8 +41,11 @@ export const interestApi = createApi({
         }
       },
       transformResponse: (response: GetEntitiesResponse, meta, uri) => {
+        if (!response || !response.entities) return undefined
+
         const entity = Object.values(response.entities)[0]
-        if (!entity) throw new Error('entity not found')
+
+        if (!entity) return undefined
 
         const label = entity.labels.en?.value ?? ''
         const description = entity.descriptions.en?.value ?? ''

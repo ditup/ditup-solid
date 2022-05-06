@@ -59,8 +59,8 @@ export const ditapi = createApi({
       }),
       transformResponse: (data: User[]) => data[0],
     }),
-    discoverPeople: builder.query<{ uri: string; count: number }[], string>({
-      query: (userId: string) => ({
+    discoverPeople: builder.query<{ uri: string; count: number }[], [string]>({
+      query: ([userId]: [string]) => ({
         query: `
           PREFIX foaf: <http://xmlns.com/foaf/0.1/>
           PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -81,8 +81,10 @@ export const ditapi = createApi({
           count: +commonCount,
         })),
     }),
-    discoverDits: builder.query<{ uri: string; count: number }[], string>({
-      query: (userId: string) => ({
+    discoverDits: builder.query<{ uri: string; count: number }[], [string]>({
+      query: ([userId]: [string]) => ({
+        // @TODO we could remove dits that belong to the user with MINUS
+        // https://www.w3.org/TR/sparql11-query/#neg-minus
         query: `
           SELECT DISTINCT ?dit (COUNT(DISTINCT ?thing) as ?commonCount)
           WHERE {
@@ -96,6 +98,84 @@ export const ditapi = createApi({
         data.map(({ dit, commonCount }) => ({
           uri: dit,
           count: +commonCount,
+        })),
+    }),
+    findDitsByTags: builder.query<
+      { uri: string; count: number }[],
+      [string, ...string[]]
+    >({
+      query: (tags: [string, ...string[]]) => {
+        const tagsPrepared = tags.map(uri => `<${uri}>`).join(' ')
+        return {
+          query: `
+          SELECT DISTINCT ?dit (COUNT(DISTINCT ?thing) as ?matchCount)
+          WHERE {
+            VALUES ?thing { ${tagsPrepared} }
+            ?dit <${as.tag}> ?thing.
+          }
+          GROUP BY ?dit`,
+          sources: [...indexServers],
+        }
+      },
+      transformResponse: (data: { dit: string; matchCount: string }[]) =>
+        data.map(({ dit, matchCount }) => ({
+          uri: dit,
+          count: +matchCount,
+        })),
+    }),
+    findPeopleByTags: builder.query<
+      { uri: string; count: number }[],
+      [string, ...string[]]
+    >({
+      query: (tags: [string, ...string[]]) => {
+        const tagsPrepared = tags.map(uri => `<${uri}>`).join(' ')
+        return {
+          query: `
+          SELECT DISTINCT ?person (COUNT(DISTINCT ?thing) as ?matchCount)
+          WHERE {
+            VALUES ?thing { ${tagsPrepared} }
+            ?person <${foaf.topic_interest}> ?thing.
+          }
+          GROUP BY ?person`,
+          sources: [...indexServers],
+        }
+      },
+      transformResponse: (data: { person: string; matchCount: string }[]) =>
+        data.map(({ person, matchCount }) => ({
+          uri: person,
+          count: +matchCount,
+        })),
+    }),
+    findTagsByTags: builder.query<
+      { uri: string; count: number }[],
+      [string, ...string[]]
+    >({
+      query: (tags: [string, ...string[]]) => {
+        const tagsPrepared = tags.map(uri => `<${uri}>`).join(' ')
+        return {
+          query: `
+          SELECT DISTINCT ?tag (COUNT(DISTINCT ?s) as ?matchCount)
+          WHERE {
+            VALUES ?thing { ${tagsPrepared} }
+            {
+              ?s <${foaf.topic_interest}> ?thing.
+              ?s <${foaf.topic_interest}> ?tag.
+            }
+            UNION
+            {
+              ?s <${as.tag}> ?thing.
+              ?s <${as.tag}> ?tag.
+            }
+            FILTER (?thing != ?tag)
+          }
+          GROUP BY ?tag`,
+          sources: [...indexServers],
+        }
+      },
+      transformResponse: (data: { tag: string; matchCount: string }[]) =>
+        data.map(({ tag, matchCount }) => ({
+          uri: tag,
+          count: +matchCount,
         })),
     }),
   }),
