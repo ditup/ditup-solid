@@ -47,7 +47,7 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [ ] cache user images, so they don't load every time
 - [x] list dits related to a tag (mine and other people's) on tag page
   - [ ] also list my dits
-- [ ] list person's dits on person page
+- [x] list person's dits on person page
 
 ### Styling
 

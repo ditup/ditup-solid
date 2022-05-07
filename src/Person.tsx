@@ -5,6 +5,7 @@ import { useAppSelector } from './app/hooks'
 import { solidApi } from './app/services/solidApi'
 import logo from './assets/main-image.png'
 import Discoverability from './Discoverability'
+import DitList from './DitList'
 import EditableTagList from './EditableTagList'
 import { selectLogin } from './features/login/loginSlice'
 import TagList from './TagList'
@@ -13,7 +14,8 @@ const Person = () => {
   const personId = useParams<'personId'>().personId as string
   const loginUri = useAppSelector(selectLogin).webId
   const personUri = personId === 'me' ? loginUri : personId
-  const { data, isLoading } = solidApi.endpoints.readPerson.useQuery(personUri)
+  const { data, isLoading, isUninitialized, isError } =
+    solidApi.endpoints.readPerson.useQuery(personUri)
   const [addInterest] = solidApi.endpoints.addInterest.useMutation()
   const [removeInterest] = solidApi.endpoints.removeInterest.useMutation()
   const [notifyIndex] = solidApi.endpoints.notifyIndex.useMutation()
@@ -33,7 +35,14 @@ const Person = () => {
     })()
   }, [data?.photo])
 
-  if (!data) return <div>Loading...</div>
+  if (isLoading || isUninitialized) return <div>Loading...</div>
+
+  if (isError)
+    return (
+      <div>
+        Sorry, we couldn&apos;t find user &quot;{personUri}&quot; for you
+      </div>
+    )
 
   const handleAddTag = async (interest: string) => {
     await addInterest({ uri: personUri, interest })
@@ -87,6 +96,8 @@ const Person = () => {
         tags={data.interests}
         editable={personUri === loginUri}
       />
+
+      <DitList person={personUri} />
     </div>
   )
 }

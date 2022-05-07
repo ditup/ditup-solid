@@ -58,119 +58,123 @@ interface QueryParams {
 const solidQuery =
   (): BaseQueryFn<QueryParams, QueryResponse[], { message: string }> =>
   async ({ uri, data, fetchProperties, fetchAll = false }: QueryParams) => {
-    let dataset: SolidDataset
     try {
-      dataset = await getSolidDataset(uri, { fetch })
-    } catch (e) {
-      dataset = createSolidDataset()
-    }
-
-    let changedDataset: (SolidDataset & WithChangeLog) | undefined
-
-    if (data?.remove)
-      data.remove.forEach(([subject, predicate, object]) => {
-        const thing = getThing(changedDataset ?? dataset, subject)
-        if (thing) {
-          if (predicate === '*') {
-            changedDataset = removeThing(changedDataset ?? dataset, thing)
-          } else if (object === '*') {
-            const updatedThing = removeAll(thing, predicate)
-            changedDataset = setThing(changedDataset ?? dataset, updatedThing)
-          } else {
-            const updatedThing = removeUrl(thing, predicate, object)
-            changedDataset = setThing(changedDataset ?? dataset, updatedThing)
-          }
-        }
-      })
-
-    if (data?.setString)
-      data.setString.forEach(([subject, predicate, object]) => {
-        const thing =
-          getThing(changedDataset ?? dataset, subject) ??
-          createThing({ url: subject })
-        if (thing) {
-          const updatedThing = setStringWithLocale(
-            thing,
-            predicate,
-            object,
-            'en',
-          )
-          changedDataset = setThing(changedDataset ?? dataset, updatedThing)
-        }
-      })
-
-    if (data?.setDatetime)
-      data.setDatetime.forEach(([subject, predicate, object]) => {
-        const thing =
-          getThing(changedDataset ?? dataset, subject) ??
-          createThing({ url: subject })
-        if (thing) {
-          const updatedThing = setDatetime(thing, predicate, object)
-          changedDataset = setThing(changedDataset ?? dataset, updatedThing)
-        }
-      })
-
-    if (data?.set)
-      data.set.forEach(([subject, predicate, object]) => {
-        const thing =
-          getThing(changedDataset ?? dataset, subject) ??
-          createThing({ url: subject })
-        if (thing) {
-          const updatedThing = setUrl(thing, predicate, object)
-          changedDataset = setThing(changedDataset ?? dataset, updatedThing)
-        }
-      })
-
-    if (data?.add)
-      data.add.forEach(([subject, predicate, object]) => {
-        const thing =
-          getThing(changedDataset ?? dataset, subject) ??
-          createThing({ url: subject })
-
-        const updatedThing = addUrl(thing, predicate, object)
-        changedDataset = setThing(changedDataset ?? dataset, updatedThing)
-      })
-
-    if (changedDataset) {
-      await saveSolidDatasetAt(uri, changedDataset, { fetch })
-    }
-
-    let returnThings: ThingPersisted[]
-    if (!fetchAll) {
-      returnThings = [getThing(changedDataset ?? dataset, uri)].filter(
-        a => !!a,
-      ) as ThingPersisted[]
-    } else {
-      returnThings = getThingAll(changedDataset ?? dataset)
-    }
-
-    const returnData = returnThings.map(returnThing => ({
-      ...Object.fromEntries(
-        Object.entries(fetchProperties).map(([key, value]) => [
-          key,
-          [
-            ...getUrlAll(returnThing, value),
-            ...getStringEnglishAll(returnThing, value),
-            ...getStringNoLocaleAll(returnThing, value),
-            ...getDatetimeAll(returnThing, value),
-          ],
-        ]),
-      ),
-      uri: [returnThing.url],
-    }))
-
-    if (
-      !fetchAll &&
-      returnData.length === 0 &&
-      // also don't error when mutation removed the whole thing
-      !(data?.remove ?? []).find(([, predicate]) => predicate === '*')
-    )
-      return {
-        error: { message: 'thing not found' },
+      let dataset: SolidDataset
+      try {
+        dataset = await getSolidDataset(uri, { fetch })
+      } catch (e) {
+        dataset = createSolidDataset()
       }
 
-    return {
-      data: returnData,
+      let changedDataset: (SolidDataset & WithChangeLog) | undefined
+
+      if (data?.remove)
+        data.remove.forEach(([subject, predicate, object]) => {
+          const thing = getThing(changedDataset ?? dataset, subject)
+          if (thing) {
+            if (predicate === '*') {
+              changedDataset = removeThing(changedDataset ?? dataset, thing)
+            } else if (object === '*') {
+              const updatedThing = removeAll(thing, predicate)
+              changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+            } else {
+              const updatedThing = removeUrl(thing, predicate, object)
+              changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+            }
+          }
+        })
+
+      if (data?.setString)
+        data.setString.forEach(([subject, predicate, object]) => {
+          const thing =
+            getThing(changedDataset ?? dataset, subject) ??
+            createThing({ url: subject })
+          if (thing) {
+            const updatedThing = setStringWithLocale(
+              thing,
+              predicate,
+              object,
+              'en',
+            )
+            changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+          }
+        })
+
+      if (data?.setDatetime)
+        data.setDatetime.forEach(([subject, predicate, object]) => {
+          const thing =
+            getThing(changedDataset ?? dataset, subject) ??
+            createThing({ url: subject })
+          if (thing) {
+            const updatedThing = setDatetime(thing, predicate, object)
+            changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+          }
+        })
+
+      if (data?.set)
+        data.set.forEach(([subject, predicate, object]) => {
+          const thing =
+            getThing(changedDataset ?? dataset, subject) ??
+            createThing({ url: subject })
+          if (thing) {
+            const updatedThing = setUrl(thing, predicate, object)
+            changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+          }
+        })
+
+      if (data?.add)
+        data.add.forEach(([subject, predicate, object]) => {
+          const thing =
+            getThing(changedDataset ?? dataset, subject) ??
+            createThing({ url: subject })
+
+          const updatedThing = addUrl(thing, predicate, object)
+          changedDataset = setThing(changedDataset ?? dataset, updatedThing)
+        })
+
+      if (changedDataset) {
+        await saveSolidDatasetAt(uri, changedDataset, { fetch })
+      }
+
+      let returnThings: ThingPersisted[]
+      if (!fetchAll) {
+        returnThings = [getThing(changedDataset ?? dataset, uri)].filter(
+          a => !!a,
+        ) as ThingPersisted[]
+      } else {
+        returnThings = getThingAll(changedDataset ?? dataset)
+      }
+
+      const returnData = returnThings.map(returnThing => ({
+        ...Object.fromEntries(
+          Object.entries(fetchProperties).map(([key, value]) => [
+            key,
+            [
+              ...getUrlAll(returnThing, value),
+              ...getStringEnglishAll(returnThing, value),
+              ...getStringNoLocaleAll(returnThing, value),
+              ...getDatetimeAll(returnThing, value),
+            ],
+          ]),
+        ),
+        uri: [returnThing.url],
+      }))
+
+      if (
+        !fetchAll &&
+        returnData.length === 0 &&
+        // also don't error when mutation removed the whole thing
+        !(data?.remove ?? []).find(([, predicate]) => predicate === '*')
+      )
+        return {
+          error: { message: 'thing not found' },
+        }
+
+      return {
+        data: returnData,
+      }
+    } catch (error) {
+      return { error: { message: (error as Error).message } }
     }
   }
 
@@ -372,31 +376,35 @@ export const solidApi = createApi({
     }),
     readDiscoverability: build.query<Uri[], Uri>({
       queryFn: async uri => {
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000))
 
-        if (indexServers.length === 0)
-          throw new Error('no index servers defined')
+          if (indexServers.length === 0)
+            throw new Error('no index servers defined')
 
-        const sparqlEngine = new QueryEngine()
-        sparqlEngine.invalidateHttpCache()
+          const sparqlEngine = new QueryEngine()
+          sparqlEngine.invalidateHttpCache()
 
-        const bindingsStream = await sparqlEngine.queryBindings(
-          `
+          const bindingsStream = await sparqlEngine.queryBindings(
+            `
           SELECT DISTINCT ?tag WHERE {
             <${uri}> <${foaf.topic_interest}> | <${as.tag}> ?tag.
           }
           `,
-          {
-            sources: [...indexServers] as [string, ...string[]],
-            fetch,
-          },
-        )
+            {
+              sources: [...indexServers] as [string, ...string[]],
+              fetch,
+            },
+          )
 
-        const tags = (await bindingsStream.toArray())
-          .map(binding => binding.get('tag')?.value ?? '')
-          .filter(a => !!a)
+          const tags = (await bindingsStream.toArray())
+            .map(binding => binding.get('tag')?.value ?? '')
+            .filter(a => !!a)
 
-        return { data: tags }
+          return { data: tags }
+        } catch (error) {
+          return { error: { message: (error as Error).message } }
+        }
       },
       providesTags: (result, error, uri) => [
         { type: 'Discoverability', id: uri },

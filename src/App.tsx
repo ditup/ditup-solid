@@ -4,11 +4,11 @@ import { useAppSelector } from './app/hooks'
 import CreateDit from './CreateDit'
 import Discover from './Discover'
 import DitItemPage from './DitItemPage'
-import DitList from './DitList'
 import EditDitPage from './EditDitPage'
 import { selectLogin } from './features/login/loginSlice'
 import Header from './Header'
 import Homepage from './Homepage'
+import MainPage from './MainPage'
 import Person from './Person'
 import Signup from './Signup'
 import TagPage from './TagPage'
@@ -34,7 +34,7 @@ function App() {
     <div>
       <Header />
       <Routes>
-        <Route path="/" element={<DitList />} />
+        <Route path="/" element={<MainPage />} />
         <Route path="/discover" element={<Discover />} />
         <Route path="/people/:personId" element={<Person />} />
         <Route path="/create" element={<CreateDit />} />

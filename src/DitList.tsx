@@ -1,16 +1,13 @@
-import { skipToken } from '@reduxjs/toolkit/query'
-import { useAppSelector } from './app/hooks'
 import { getDitupUri, solidApi } from './app/services/solidApi'
 import DitItem from './DitItem'
-import { selectLogin } from './features/login/loginSlice'
 import HorizontalList from './HorizontalList'
 
-const DitList = () => {
-  const { webId } = useAppSelector(selectLogin)
+const DitList = ({ person }: { person: string }) => {
+  /* @TODO we may want to use another function here
+  not 'read dit items', but 'read dits of person' */
   const { data, isLoading, isUninitialized } =
-    solidApi.endpoints.readDitItems.useQuery(
-      webId ? getDitupUri(webId) : skipToken,
-    )
+    solidApi.endpoints.readDitItems.useQuery(getDitupUri(person))
+
   if (isLoading || isUninitialized || !data) return <div>Loading...</div>
 
   return (
