@@ -31,6 +31,8 @@ const DitItemForm = ({
   const handleAddTag = (tagUri: Uri) => {
     if (!tags.find(tag => tag === tagUri)) setTags(tags => [...tags, tagUri])
     else {
+      // @TODO inform user nicely
+      // eslint-disable-next-line no-console
       console.log('tag already in list')
     }
   }

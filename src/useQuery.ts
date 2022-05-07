@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { QueryEngine } from '@comunica/query-sparql/lib/index-browser'
 import { Bindings } from '@rdfjs/types'
+import { useEffect, useState } from 'react'
 
 const useQuery = <Result extends Record<string, string | null>>(
   query: string,
@@ -34,6 +34,7 @@ const useQuery = <Result extends Record<string, string | null>>(
         setResults(results => [...results, result])
       })
       bindingsStream.on('error', error => {
+        // eslint-disable-next-line no-console
         console.error(error)
         setErrors(errors => [...errors, error])
       })
