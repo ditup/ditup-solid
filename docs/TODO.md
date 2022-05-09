@@ -29,6 +29,8 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - Support for all languages
 - Seamlessly incorporate DBpedia interests through their owl:sameAs tag to wikidata
 - Create and manage a network of physical bases open for public. Something between of Library, Workshop, and Unschooling school for diverse people of all ages <3, especially lower 90%
+- Make a mindmap of person's questions, issues, ideas; linked to other people's questions, issues, ideas
+- can we connect all the person's knowledge? Books, ideas of others, citations, ... anything that has tags to wikidata or other things? Yeah, that's powerful.
 
 ## Smaller tasks
 
@@ -38,6 +40,7 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [ ] 404 page
 - [ ] A filter on Dit List
   - filter by dit type
+  - filter by tags
   - sort by different kinds of relevance, creation, likes, ...
 - [ ] add footer with link to Solid, github repository, attributions of fonts etc...
 - [x] Add license
@@ -48,6 +51,8 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [x] list dits related to a tag (mine and other people's) on tag page
   - [ ] also list my dits
 - [x] list person's dits on person page
+- [ ] private dits (public, unlisted, private)
+- [ ] edit only my own things
 
 ### Styling
 
