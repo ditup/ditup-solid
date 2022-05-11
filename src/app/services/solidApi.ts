@@ -25,7 +25,7 @@ import {
 } from '@inrupt/solid-client'
 import { fetch } from '@inrupt/solid-client-authn-browser'
 import { BaseQueryFn, createApi } from '@reduxjs/toolkit/query/react'
-import { as, dct, foaf, rdf, rdfs, vcard } from 'rdf-namespaces'
+import { as, dct, foaf, rdf, rdfs, solid, vcard } from 'rdf-namespaces'
 import { ditUris, indexInboxes, indexServers } from '../../config'
 import { DitThing, DitType, Person, Uri } from '../../types'
 
@@ -410,14 +410,25 @@ export const solidApi = createApi({
         { type: 'Discoverability', id: uri },
       ],
     }),
-    notifyIndex: build.mutation<number, { uri: string; person: string }>({
-      queryFn: async ({ uri, person }) => {
+    notifyIndex: build.mutation<
+      number,
+      { uri: Uri; person: Uri; action?: 'add' | 'remove' }
+    >({
+      queryFn: async ({ uri, person, action = 'add' }) => {
+        /* first, we need to make sure that person's profile contains the triple <person> solid:oidcIssuer <issuer> */
+        await findOrCreateOidcIssuer(person)
         await Promise.all(
           indexInboxes.map(inbox =>
             fetch(inbox, {
               headers: { 'content-type': 'application/ld+json' },
               method: 'POST',
-              body: JSON.stringify({ actor: person, object: uri }),
+              body: JSON.stringify({
+                '@context': 'https://www.w3.org/ns/activitystreams',
+                '@id': '',
+                '@type': action === 'remove' ? 'Remove' : 'Announce',
+                actor: person,
+                object: uri,
+              }),
             }),
           ),
         )
@@ -431,8 +442,40 @@ export const solidApi = createApi({
   }),
 })
 
-export const getDitupUri = (webId: string) => {
+export const getDitupUri = (webId: Uri) => {
   const baseUrl = /^(https?:\/\/.*)\/profile\/card#me$/g.exec(webId)?.[1]
   if (!baseUrl) throw new Error('unable to generate hospex uri from webId')
   return baseUrl + '/public/ditup.ttl'
+}
+
+const findOrCreateOidcIssuer = async (person: Uri): Promise<boolean> => {
+  const dataset = await getSolidDataset(person)
+  const personThing = getThing(dataset, person)
+  if (!personThing) throw new Error(`person not found in document ${person}`)
+  const issuers = getUrlAll(personThing, solid.oidcIssuer)
+  const hasIssuer = issuers.length > 0
+
+  if (!hasIssuer) {
+    // find issuer of current person
+    const issuer = getIssuerFromLocalStorage()
+    const newPerson = addUrl(personThing, solid.oidcIssuer, issuer)
+    const newDataset = setThing(dataset, newPerson)
+    await saveSolidDatasetAt(person, newDataset, { fetch })
+  }
+
+  return !hasIssuer
+}
+
+const getIssuerFromLocalStorage = () => {
+  const currentSession = globalThis.localStorage.getItem(
+    'solidClientAuthn:currentSession',
+  )
+  if (!currentSession)
+    throw new Error('solidClientAuthn:currentSession not found')
+  const user = globalThis.localStorage.getItem(
+    `solidClientAuthenticationUser:${currentSession}`,
+  )
+  if (!user) throw new Error('current solidClientAuthenticationUser not found')
+  const { issuer } = JSON.parse(user)
+  return issuer as string
 }

@@ -15,7 +15,8 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [x] Show indexed items of other people
 - [x] Show other people with my interests
 - [x] Make & use index that accepts suggestions for indexing
-- [ ] Index also updates itself, authenticates people, allows users to remove themselves and their items from the index...
+- [x] Index authenticates people, allows users to remove themselves and their items from the index...
+  - [ ] Index also updates itself regularly
 - [ ] See details of items - comment, like, remember
 - [ ] Connect with people - write to humans
 - [ ] Make it nice looking (get design from somebody, and implement it!)
@@ -31,6 +32,8 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - Create and manage a network of physical bases open for public. Something between of Library, Workshop, and Unschooling school for diverse people of all ages <3, especially lower 90%
 - Make a mindmap of person's questions, issues, ideas; linked to other people's questions, issues, ideas
 - can we connect all the person's knowledge? Books, ideas of others, citations, ... anything that has tags to wikidata or other things? Yeah, that's powerful.
+- better matching algorithm - based on clusters of terms - so similar tags to each other will also help discover dits (suggested by @agatatalitatest)
+- add interest to myself from interest list (feature requested by @agatatalitatest)
 
 ## Smaller tasks
 
@@ -52,7 +55,9 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
   - [ ] also list my dits
 - [x] list person's dits on person page
 - [ ] private dits (public, unlisted, private)
+- [ ] rename Problems to Challenges
 - [ ] edit only my own things
+- [ ] add interest to myself from interest page
 
 ### Styling
 
