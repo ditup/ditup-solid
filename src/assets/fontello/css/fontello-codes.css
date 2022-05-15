@@ -4,5 +4,8 @@
 .icon-eye-off:before { content: '\e802'; } /* '' */
 .icon-problem:before { content: '\e803'; } /* '' */
 .icon-ditup:before { content: '\e804'; } /* '' */
+.icon-ok:before { content: '\e805'; } /* '' */
+.icon-add:before { content: '\e806'; } /* '' */
+.icon-load:before { content: '\e839'; } /* '' */
 .icon-external-link:before { content: '\f08e'; } /* '' */
 .icon-idea:before { content: '\f0eb'; } /* '' */

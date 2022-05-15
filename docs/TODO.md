@@ -57,7 +57,11 @@ _dit_ here means one of Idea, Project, Problem, Event, ... i.e. something to fig
 - [ ] private dits (public, unlisted, private)
 - [ ] rename Problems to Challenges
 - [ ] edit only my own things
-- [ ] add interest to myself from interest page
+- [x] add interest to myself from interest page
+- [ ] make weighted tag list (where tags have weight, some match the context more and some less)
+- [ ] \(bug) fix stuck loading indicators when list is empty
+- [ ] more secure delete (not one click)
+- [ ] check if delete updates index accordingly (it probably doesn't)
 
 ### Styling
 

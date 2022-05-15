@@ -8,6 +8,7 @@ import { solidApi } from './app/services/solidApi'
 import useFindAndGet from './app/services/useFindAndGet'
 import DitItem from './DitItem'
 import HorizontalList from './HorizontalList'
+import MyTag from './MyTag'
 import PersonSummary from './PersonSummary'
 import TagList from './TagList'
 import { DitThing, Person } from './types'
@@ -87,7 +88,9 @@ const TagPage = () => {
             />
           )}
           <header>
-            <h1>{data.label}</h1>
+            <h1>
+              {data.label} <MyTag uri={data.uri} />
+            </h1>
             <p>{data.aliases.join(' • ')}</p>
             <small>
               <a href={data.uri}>{data.uri}</a>
